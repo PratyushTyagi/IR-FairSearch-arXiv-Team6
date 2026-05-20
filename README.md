@@ -1,12 +1,3 @@
-# fairsearch-arxiv
-
-**FairSearch-arXiv: Evaluating and Mitigating Bias in Academic Retrieval-Augmented Generation**
-CS 6200: Information Retrieval · Northeastern University · Summer 2026
-
-**Team:** Aarushi Kaushik · Pavani Jain · Pratyush Tyagi · Shweta Pattanaik
-
----
-
 ## Overview
 
 We audit a Retrieval-Augmented Generation (RAG) pipeline for academic search
