@@ -1,3 +1,12 @@
+# IR-FairSearch-arXiv-Team6
+
+**FairSearch-arXiv: Evaluating and Mitigating Bias in Academic Retrieval-Augmented Generation**
+CS 6200: Information Retrieval · Northeastern University · Summer 2026 · **Team 6**
+
+**Team:** Aarushi Kaushik · Pavani Jain · Pratyush Tyagi · Shweta Pattanaik
+
+---
+
 ## Overview
 
 We audit a Retrieval-Augmented Generation (RAG) pipeline for academic search
@@ -40,7 +49,7 @@ FA*IR re-ranking and fairness-aware prompting.
 ## Planned Repository Layout
 
 ```
-fairsearch-arxiv/
+IR-FairSearch-arXiv-Team6/
 ├── report/        ACM-format proposal: PDF + LaTeX source
 ├── slides/        Presentation deck (.pptx)
 ├── data/          arXiv snapshot + sampled subsets (gitignored)
@@ -70,8 +79,8 @@ fairsearch-arxiv/
 ## Quickstart (once code lands)
 
 ```bash
-git clone https://github.com/PratyushTyagi/fairsearch-arxiv.git
-cd fairsearch-arxiv
+git clone https://github.com/PratyushTyagi/IR-FairSearch-arXiv-Team6.git
+cd IR-FairSearch-arXiv-Team6
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
@@ -97,4 +106,3 @@ Full citations in the proposal PDF.
 ## License
 
 [MIT](LICENSE).
-
