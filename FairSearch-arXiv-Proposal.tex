@@ -1,0 +1,104 @@
+%%
+%% FairSearch-arXiv — CS 6200 Project Proposal (Summer 2026)
+%% Strictly one page. Line numbers (red) + custom footer. No watermark.
+%% Compile on Overleaf with the official ACM acmart template.
+%%
+\documentclass[sigconf]{acmart}
+
+%% --- Red line numbers without the authordraft watermark -----------------
+\usepackage[switch,pagewise]{lineno}
+\renewcommand{\linenumberfont}{\normalfont\tiny\sffamily\color{red}}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+\setcopyright{none}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmDOI{}
+\acmISBN{}
+\acmConference[CS 6200 '26]{CS 6200: Information Retrieval}{Summer 2026}{Northeastern University, Boston, MA}
+
+\settopmatter{printacmref=false,printccs=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\begin{document}
+
+\title[FairSearch-arXiv]{FairSearch-arXiv: Evaluating and Mitigating Bias in Academic Retrieval-Augmented Generation}
+
+\author{Aarushi Kaushik, Pavani Jain, Pratyush Tyagi, Shweta Pattanaik}
+\affiliation{%
+  \institution{Khoury College of Computer Sciences, Northeastern University}
+  \city{Boston}\state{Massachusetts}\country{USA}}
+
+\renewcommand{\shortauthors}{Kaushik, Jain, Tyagi, Pattanaik}
+
+\begin{abstract}
+We audit a Retrieval-Augmented Generation pipeline over the Cornell arXiv dataset (2M+ preprints), decomposing retrieval- and synthesis-stage amplification of institutional homophily and characterising the fairness--utility trade-off of FA*IR re-ranking and fairness-aware prompting.
+\end{abstract}
+
+\maketitle
+
+%% --- Turn line numbers on, and replace the page footer ------------------
+\linenumbers
+
+\fancypagestyle{customfooter}{%
+  \fancyhf{}%
+  \fancyfoot[L]{\footnotesize CS 6200 '26, Summer 2026, Northeastern University, Boston, MA}%
+  \fancyfoot[C]{\footnotesize CS6200 Page 1 -1}%
+  \fancyfoot[R]{\footnotesize Kaushik, Jain, Tyagi, Pattanaik}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+\thispagestyle{customfooter}
+\pagestyle{customfooter}
+
+\section{Problem Description}
+RAG for academic search retrieves papers from a dense vector index and passes them to an LLM that synthesises an answer. Both stages encode and amplify \emph{institutional homophily}---the empirical pull of citations and retrievals toward well-resourced labs. \emph{Retrieval-stage}: scientific sentence embeddings (SPECTER2, MiniLM) trained on corpora that overrepresent elite labs encode their stylistic and citation signatures, so cosine similarity ranks their papers higher \emph{even at equal topical relevance}. \emph{Synthesis-stage}: the LLM must choose whom to credit over the top-$k$ and prefers densely-represented entities, compounding retrieval skew at the surface the user reads. The two effects multiply, not add. On 2M+ arXiv preprints, which papers get surfaced for a query like \emph{``recent advances in retrieval''} decides which research lineage the next reviewer or grant panelist reads. We ask: \textbf{(RQ1)}~does dense retrieval over-represent top-tier institutions vs.\ BM25? \textbf{(RQ2)}~does synthesis add citation skew given a balanced top-$k$? \textbf{(RQ3)}~what EED reduction is achievable at $\leq$5\% nDCG@10 cost?
+
+\section{Background}
+
+\textbf{Singh and Joachims~[2018]}~\cite{singh2018} examine \emph{exposure unfairness} in learning-to-rank: small relevance gaps compound into large attention gaps across protected groups. Their LP-based fair ranker matches NDCG on Yahoo!\ LTR but scales poorly past $k\!\approx\!100$ and assumes binary, stable group labels.
+
+\textbf{Biega, Gummadi, and Weikum~[2018]}~\cite{biega2018} propose \emph{amortised equity of attention}: redistribute position-discounted exposure so equally relevant items receive equal attention in expectation. The IP solution narrows attention gaps with limited NDCG loss but is per-query expensive and assumes a stable cross-query relevance notion---brittle for open-domain RAG.
+
+\textbf{Zehlike et al.~[2017]}~\cite{zehlike2017} introduce FA*IR, an $O(k)$ re-ranker enforcing a minimum proportion of a protected group in every top-$k$ prefix via binomial thresholds. It composes with any base ranker (our default mitigation) but supports only one binary attribute and ignores generation-stage bias.
+
+\textbf{Diaz et al.~[2020]}~\cite{diaz2020} generalise ranking fairness to \emph{stochastic} rankers via expected exposure (EEL/EED), our retrieval-side metric since RAG retrieval is stochastic across query rewrites. The required target distribution is contested for institutional fairness, and the framework is agnostic to synthesis-stage effects.
+
+\textbf{Rekabsaz and Schedl~[2020]}~\cite{rekabsaz2020} show BERT cross-encoders intensify gender bias relative to BM25 on TREC: dense models pull biased documents into the top-$k$ even at neutral query intent. Their analysis is restricted to gender on short web queries; the institutional analogue on scientific text is exactly our RQ1.
+
+\textbf{Ekstrand et al.~[2018]}~\cite{ekstrand2018} audit popularity and demographic biases in collaborative-filtering recommenders, showing utility-optimising models under-serve the long tail. Their slate-vs-population audit transfers if we treat the top-$k$ as a slate, but their evaluation is limited to consumer domains---scientific text with dense embeddings is unaudited.
+
+\textbf{Research gap.} Prior work characterises retrieval exposure~[1--4], embedding amplification~[5], and recommender popularity bias~[6] \emph{separately}. No published study jointly audits these on a RAG pipeline over scientific preprints with institutional affiliation as the protected attribute, nor decomposes synthesis-stage citation skew. \textbf{FairSearch-arXiv} contributes (i)~a reproducible audit pipeline, (ii)~a retrieval-vs-synthesis bias decomposition, and (iii)~Pareto curves for FA*IR plus prompt-level mitigation.
+
+\section{Project Plan and Milestones}
+
+\begin{table}[h]
+  \caption{Week 3--14 milestones with explicit exit gates.}
+  \label{tab:plan}
+  \footnotesize
+  \begin{tabular}{@{}p{0.42in}p{0.55in}p{1.76in}@{}}
+    \toprule
+    \textbf{Week} & \textbf{Phase} & \textbf{Milestone \& exit gate} \\
+    \midrule
+    W3--W5   & Data        & Pull Kaggle snapshot; stratified 50K sample by category$\times$year; ROR/CWUR affiliation extraction; EDA. \emph{Gate}: $\geq$90\% affiliations resolved. \\
+    W6--W8   & Baseline    & SPECTER2 + MiniLM embed; ChromaDB index; Llama-3-8B synthesis; metrics (EEL/EED, parity@$k$, citation-share). \emph{Gate}: end-to-end query $\leq$3\,s. \\
+    W9--W12  & Eval + Mitig.& Measure RQ1/RQ2; FA*IR re-rank, MMR, fairness-aware prompt; fairness--utility Pareto curve. \\
+    W13--W14 & Deliver     & Streamlit UI with fairness toggle; final ACM report, code release, demo, slides. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{thebibliography}{9}\footnotesize
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+\bibitem{singh2018} Ashudeep Singh and Thorsten Joachims. 2018. Fairness of Exposure in Rankings. In \emph{Proc.\ KDD '18}. ACM, 2219--2228.
+\bibitem{biega2018} Asia J. Biega, Krishna P. Gummadi, and Gerhard Weikum. 2018. Equity of Attention: Amortizing Individual Fairness in Rankings. In \emph{Proc.\ SIGIR '18}. ACM, 405--414.
+\bibitem{zehlike2017} Meike Zehlike, Francesco Bonchi, Carlos Castillo, et al. 2017. FA*IR: A Fair Top-$k$ Ranking Algorithm. In \emph{Proc.\ CIKM '17}. ACM, 1569--1578.
+\bibitem{diaz2020} Fernando Diaz, Bhaskar Mitra, Michael D. Ekstrand, et al. 2020. Evaluating Stochastic Rankings with Expected Exposure. In \emph{Proc.\ CIKM '20}. ACM, 275--284.
+\bibitem{rekabsaz2020} Navid Rekabsaz and Markus Schedl. 2020. Do Neural Ranking Models Intensify Gender Bias? In \emph{Proc.\ SIGIR '20}. ACM, 2065--2068.
+\bibitem{ekstrand2018} Michael D. Ekstrand, Mucun Tian, Ion Madrazo Azpiazu, et al. 2018. All the Cool Kids, How Do They Fit In? Popularity and Demographic Biases in Recommender Evaluation. In \emph{Proc.\ FAccT '18}. PMLR, 172--186.
+\end{thebibliography}
+
+\end{document}
