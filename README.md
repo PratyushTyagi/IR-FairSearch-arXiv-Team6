@@ -1,108 +1,138 @@
-# IR-FairSearch-arXiv-Team6
+# FairSearch-arXiv — Baseline RAG Pipeline (Project Update 1)
 
-**FairSearch-arXiv: Evaluating and Mitigating Bias in Academic Retrieval-Augmented Generation**
-CS 6200: Information Retrieval · Northeastern University · Summer 2026 · **Team 6**
+Audit pipeline for institutional bias in academic Retrieval-Augmented
+Generation over the Cornell arXiv corpus. This repo covers **Project Update 1**:
+stratified sampling, a naive RAG baseline (SPECTER2 / MiniLM + ChromaDB +
+Llama-3-8B-Instruct), a BM25 control, Precision/Recall evaluation, and
+**preliminary fairness observations**.
 
-**Team:** Aarushi Kaushik · Pavani Jain · Pratyush Tyagi · Shweta Pattanaik
-
----
-
-## Overview
-
-We audit a Retrieval-Augmented Generation (RAG) pipeline for academic search
-over the [Cornell arXiv dataset](https://www.kaggle.com/datasets/Cornell-University/arxiv)
-(2M+ preprints), where dense retrieval and LLM synthesis may *multiplicatively*
-amplify institutional homophily. We decompose the bias into retrieval-stage and
-synthesis-stage effects, then characterise the fairness–utility trade-off of
-FA*IR re-ranking and fairness-aware prompting.
-
-## Research Questions
-
-- **RQ1 — Retrieval Parity.** Does dense retrieval over-represent top-tier institutions versus BM25?
-- **RQ2 — Synthesis Neutrality.** Does LLM synthesis add citation skew given a balanced top-*k*?
-- **RQ3 — Fairness–Utility.** What EED reduction is achievable at ≤ 5% nDCG@10 cost?
-
-## Stack
-
-| Layer | Choice |
-|---|---|
-| Dataset | Cornell arXiv on Kaggle — 2M+ papers, JSONL, weekly update |
-| Sample | Stratified random 50K by primary category × year (2020–25) |
-| Embeddings | SPECTER2 (primary), all-MiniLM-L6-v2 (baseline) |
-| Vector store | ChromaDB (Qdrant fallback past 250K vectors) |
-| Generator | Llama-3-8B (Instruct) |
-| Retrieval eval | Expected Exposure Loss / Disparity (EEL, EED); demographic parity@*k* |
-| Synthesis eval | Citation-share-in-synth across institution tiers |
-| Mitigation | FA*IR re-ranker, MMR diversification, fairness-aware prompting |
-| Significance | 10K bootstrap over the query set |
-| Protected attributes | Institution tier (top-50 CWUR vs. rest), region (Global N / S) |
-| UI | Streamlit demo with fairness toggle |
-
-## Current Deliverables
-
-| File | What it is |
-|---|---|
-| [`FairSearch-arXiv-Proposal.pdf`](FairSearch-arXiv-Proposal.pdf) | 1-page ACM-format project proposal |
-| [`FairSearch-arXiv-Proposal.tex`](FairSearch-arXiv-Proposal.tex) | LaTeX source (Overleaf-ready, `acmart` sigconf) |
-| [`FairSearch-arXiv-Proposal-Slides.pptx`](FairSearch-arXiv-Proposal-Slides.pptx) | 5-slide presentation deck |
-
-## Planned Repository Layout
+## Pipeline at a glance
 
 ```
-IR-FairSearch-arXiv-Team6/
-├── report/        ACM-format proposal: PDF + LaTeX source
-├── slides/        Presentation deck (.pptx)
-├── data/          arXiv snapshot + sampled subsets (gitignored)
-├── notebooks/     EDA, exploratory analyses
-├── src/
-│   ├── data/         sampling, affiliation extraction, ROR/CWUR mapping
-│   ├── retrieval/    SPECTER2 embed + ChromaDB index
-│   ├── synthesis/    Llama-3-8B RAG synthesis
-│   ├── eval/         EEL, EED, parity@k, citation-share
-│   └── mitigation/   FA*IR, MMR, fairness-aware prompts
-├── app/           Streamlit demo
-├── tests/
-├── requirements.txt
-├── LICENSE
-└── README.md
+arXiv Kaggle JSON ──> sample_arxiv.py ──> sample_50k.jsonl
+                                              │
+                build_queries.py ─────────────┤──> queries.jsonl (qrels)
+                                              │
+                index_chroma.py ──────────────┘──> ChromaDB (specter2, minilm)
+                                              │
+                ┌─────────────────────────────┤
+                │                             │
+        evaluate.py                  generate.py  (closes the RAG loop:
+        (P@k, R@k, nDCG, MRR)         retrieve -> Llama-3-8B-Instruct)
+                │                             │
+                ▼                             ▼
+        results/baseline_metrics.csv   results/generations_*.jsonl
+                                              │
+            enrich_topk_openalex.py ──> data/topk_affiliations.jsonl
+                                              │
+            fairness_preliminary.py ──> results/fairness_preliminary.csv
+            (Slide 7: cat/year skew, Gini, Global-N share)
 ```
 
-## Timeline
+## 1. Get the data
 
-| Weeks | Phase | Exit gate |
-|---|---|---|
-| W3–W5   | Data + EDA           | ≥ 90% affiliations resolved |
-| W6–W8   | Baseline RAG         | End-to-end query ≤ 3 s |
-| W9–W12  | RQ1/RQ2 + Mitigation | Significant (p<0.05) result |
-| W13–W14 | UI + Deliverables    | Report, demo, slides |
-
-## Quickstart (once code lands)
+The metadata file is ~4 GB of newline-delimited JSON.
 
 ```bash
-git clone https://github.com/PratyushTyagi/IR-FairSearch-arXiv-Team6.git
-cd IR-FairSearch-arXiv-Team6
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-# After placing the Kaggle arXiv snapshot in data/raw/:
-python -m src.data.sample --n 50000 --out data/sample.parquet
-python -m src.retrieval.build_index --in data/sample.parquet
-python -m app.streamlit_app
+pip install kaggle
+kaggle datasets download -d Cornell-University/arxiv -p src/data --unzip
+# yields src/data/arxiv-metadata-oai-snapshot.json
 ```
 
-## Background References
+## 2. Install
 
-The proposal builds directly on six prior works:
+```bash
+pip install -r requirements.txt
+```
+A GPU is strongly recommended. SPECTER2 encoding of 50K papers takes minutes
+on GPU vs ~1–2h on CPU. Llama-3-8B-Instruct in 4-bit needs ~6 GB VRAM and is
+a gated Hugging Face model — run `huggingface-cli login` once before
+`generate.py`.
 
-1. Singh & Joachims (KDD '18) — Fairness of Exposure in Rankings
-2. Biega, Gummadi, Weikum (SIGIR '18) — Equity of Attention
-3. Zehlike et al. (CIKM '17) — FA*IR
-4. Diaz et al. (CIKM '20) — Expected Exposure (EEL/EED)
-5. Rekabsaz & Schedl (SIGIR '20) — Neural Ranking Models & Gender Bias
-6. Ekstrand et al. (FAccT '18) — Demographic Biases in Recommenders
+## 3. Run
 
-Full citations in the proposal PDF.
+```bash
+cd src
+python sample_arxiv.py             # stratified 50K sample
+python build_queries.py            # query set + qrels
+python index_chroma.py             # embed + index both encoders
+python evaluate.py                 # BM25 + dense P@k / R@k -> Table 1 / Slide 6
 
-## License
+# RAG generation step (closes the loop on the "RAG" label):
+python generate.py --n 20          # demo on first 20 queries (fast)
 
-[MIT](LICENSE).
+# Preliminary fairness observations for Slide 7:
+python enrich_topk_openalex.py     # affiliations for top-K retrieved papers (set MAILTO!)
+python fairness_preliminary.py     # category/year skew, Gini, Global-N share
+```
+
+`evaluate.py` prints a Markdown table — paste into **Table 1** of `main.tex`
+and **Slide 6** of the deck. `fairness_preliminary.py` prints a second table
+for **Slide 7**.
+
+## The relevance-labelling decision (read this)
+
+arXiv has **no relevance judgments**, so Precision/Recall are undefined until
+*you* define "relevant." We use a **known-item** protocol: each query targets
+one source paper; a hit means that paper appears in the top-k. Two ways to
+build queries (set `QUERY_METHOD` in `config.py`):
+
+- `heuristic` (default, no API): an abstract snippet is the query. Reproducible
+  but somewhat easy because the snippet overlaps the document — will compress
+  the BM25-vs-dense gap.
+- `llm` (recommended for the final report): generate a natural-language
+  question the paper answers (needs `ANTHROPIC_API_KEY`). Harder, more
+  realistic, separates dense from lexical retrieval more honestly.
+
+Document this choice in the Dataset/Experiment sections — graders look for it.
+
+## What "preliminary fairness" means here
+
+Full EED / demographic-parity / citation-share need a CWUR-tier and Global N/S
+join on enriched affiliations — that's the Week 9–10 work. For Project
+Update 1 (Slide 7), we report cheap proxy signals that are computable from
+the baseline run + a *small* OpenAlex enrichment (only top-K retrieved
+papers, not the whole corpus):
+
+  - **Category skew**: KL divergence between retrieved-category distribution
+    and corpus-category distribution; identifies whether the retriever
+    over-concentrates on e.g. cs.LG / cs.CL.
+  - **Year skew**: same idea over publication years; detects recency bias.
+  - **Retrieval concentration (Gini)**: across the full query set, how many
+    distinct papers ever appear in any top-K, and how concentrated is
+    retrieval on a small popular set?
+  - **Global-N share** (if `topk_affiliations.jsonl` exists): % of retrieved
+    slots whose authors are at Global-N institutions, by OpenAlex country.
+
+These are interpretable, comparable across retrievers, and give Slide 7 real
+data instead of a placeholder.
+
+## ⚠️ Affiliations are NOT in the arXiv snapshot
+
+The Kaggle snapshot provides `authors_parsed` (names only) — **no affiliation
+field.** We enrich from OpenAlex (free, no API key, polite-pool MAILTO).
+`enrich_topk_openalex.py` runs the *cheap* version (top-K only, ~15 min);
+`enrich_affiliations_openalex.py` runs the full corpus enrichment for the
+final report (overnight, ~50K papers).
+
+## Layout
+
+```
+fairsearch-arxiv/
+  requirements.txt
+  README.md
+  src/
+    config.py                       # all paths + params
+    sample_arxiv.py                 # stratified 50K sampler
+    build_queries.py                # qrels / query set
+    encoders.py                     # SPECTER2 (adapters) + MiniLM
+    index_chroma.py                 # embed + ChromaDB index
+    evaluate.py                     # BM25 + dense, P@k / R@k / nDCG / MRR
+    generate.py                     # Llama-3-8B-Instruct RAG generation
+    enrich_topk_openalex.py         # cheap affiliations for retrieved papers
+    enrich_affiliations_openalex.py # FULL corpus enrichment (next phase)
+    fairness_preliminary.py         # Slide 7: category/year/Gini/Global-N
+  data/                             # snapshot + sample + queries + affiliations
+  results/                          # metrics + generations + fairness CSV
+  chroma_store/                     # persistent vector DB
+```

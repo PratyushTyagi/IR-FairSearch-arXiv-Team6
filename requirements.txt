@@ -1,0 +1,15 @@
+chromadb>=0.5
+sentence-transformers>=3.0
+transformers>=4.40
+adapters>=1.0
+torch>=2.2
+rank-bm25>=0.2.2
+numpy>=1.26
+requests>=2.31
+
+# For generate.py (Llama-3-8B-Instruct in 4-bit)
+bitsandbytes>=0.43
+accelerate>=0.30
+
+# Optional, only for QUERY_METHOD="llm" in build_queries.py:
+# anthropic>=0.40
