@@ -1,19 +1,24 @@
-# FairSearch-arXiv — Baseline RAG Pipeline (Project Update 1)
+# FairSearch-arXiv
 
-**FairSearch-arXiv** audits institutional bias in Retrieval-Augmented Generation
-(RAG) for academic search, over a stratified 50K sample of the Cornell arXiv
-corpus (computer-science, 2020–2025). The concern it tests: dense retrievers
-learn from a literature already skewed toward well-resourced, Global-North labs,
-so they may surface those papers disproportionately — quietly making work from
-Global-South and less-resourced institutions harder to discover.
+*Evaluating and Mitigating Bias in Academic Retrieval-Augmented Generation*
 
-**Project Update 1** builds the baseline and takes a first reading. We stand up a
-Naive RAG pipeline (SPECTER2 / MiniLM + ChromaDB + Llama-3-8B-Instruct) with a
-BM25 lexical control, evaluate retrieval quality on a 200-query known-item
-benchmark, and compute early fairness signals. The headline: **the most accurate
-retriever is also the most skewed** — SPECTER2 leads every retrieval metric while
-concentrating retrieval most narrowly and pulling in the largest share of
-Global-North papers.
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)
+![ChromaDB](https://img.shields.io/badge/vector%20store-ChromaDB-FFB000)
+![Llama-3-8B](https://img.shields.io/badge/LLM-Llama--3--8B--Instruct-4B32C3)
+![corpus: arXiv cs.*](https://img.shields.io/badge/corpus-arXiv%20cs.*-B31B1B?logo=arxiv&logoColor=white)
+
+> **Project Update 1** builds the baseline: a Naive RAG pipeline (SPECTER2 / MiniLM
+> + ChromaDB + Llama-3-8B-Instruct) with a BM25 control, retrieval-quality
+> evaluation on a 200-query known-item benchmark, and a first set of fairness
+> signals. **Headline finding: the most accurate retriever is also the most skewed.**
+
+**FairSearch-arXiv** asks whether Retrieval-Augmented Generation (RAG) for academic
+search quietly favours well-resourced, Global-North institutions. Dense retrievers
+learn from a literature that already over-represents elite labs, so they can surface
+those papers disproportionately — making work from Global-South and less-resourced
+institutions systematically harder to find. This repo audits that effect over a
+stratified 50K sample of the Cornell arXiv corpus (computer-science, 2020–2025).
 
 ## Team
 
@@ -65,7 +70,7 @@ Global-North-skewed (83% vs 72%, an 11-point gap). These are *conservative*
 numbers: the heuristic queries favour lexical overlap, so the harder
 LLM-generated query set is expected to widen the dense-vs-BM25 gap further.
 
-## Pipeline at a glance
+## How it works
 
 ```
 arXiv Kaggle JSON ──> sample_arxiv.py ──> sample_50k.jsonl
@@ -88,10 +93,30 @@ arXiv Kaggle JSON ──> sample_arxiv.py ──> sample_50k.jsonl
             (category/year skew, Gini, Global-N share)
 ```
 
-## 1. Get the data
+Each paper's title + abstract is embedded by two dense encoders (SPECTER2, MiniLM)
+and indexed in ChromaDB; a BM25 index over the same text is the lexical control.
+At query time we retrieve the top-k and let Llama-3-8B-Instruct (4-bit) synthesise
+an answer that cites sources by arXiv id. Evaluation uses a 200-query known-item
+benchmark, and a lightweight OpenAlex enrichment supplies the institutional
+affiliations the fairness proxies need.
 
-The metadata file is ~4 GB of newline-delimited JSON, refreshed weekly under a
-CC0 license.
+## Quickstart
+
+### Clone & install
+
+```bash
+git clone https://github.com/PratyushTyagi/IR-FairSearch-arXiv-Team6.git
+cd IR-FairSearch-arXiv-Team6
+pip install -r requirements.txt
+```
+
+A GPU is strongly recommended — SPECTER2 over 50K papers takes minutes on GPU vs
+~1–2 h on CPU. Llama-3-8B-Instruct in 4-bit needs ~6 GB VRAM and is a gated
+Hugging Face model, so run `huggingface-cli login` once before `generate.py`.
+
+### Get the data
+
+The metadata file is ~4 GB of newline-delimited JSON (CC0, refreshed weekly).
 
 ```bash
 pip install kaggle
@@ -99,35 +124,25 @@ kaggle datasets download -d Cornell-University/arxiv -p src/data --unzip
 # yields src/data/arxiv-metadata-oai-snapshot.json
 ```
 
-## 2. Install
-
-```bash
-pip install -r requirements.txt
-```
-A GPU is strongly recommended. SPECTER2 encoding of 50K papers takes minutes
-on GPU vs ~1–2h on CPU. Llama-3-8B-Instruct in 4-bit needs ~6 GB VRAM and is
-a gated Hugging Face model — run `huggingface-cli login` once before
-`generate.py`.
-
-## 3. Run
+### Run
 
 ```bash
 cd src
-python sample_arxiv.py             # stratified 50K sample
-python build_queries.py            # 200-query set + qrels
-python index_chroma.py             # embed + index both encoders
-python evaluate.py                 # BM25 + dense P@k / R@k / nDCG / MRR
+python sample_arxiv.py             # stratified 50K sample        -> sample_50k.jsonl
+python build_queries.py            # 200-query set + qrels        -> queries.jsonl
+python index_chroma.py             # embed + index both encoders  -> chroma_store/
+python evaluate.py                 # BM25 + dense P@k/R@k/nDCG/MRR -> results/baseline_metrics.csv
 
-# RAG generation step (closes the loop on the "RAG" label):
+# close the RAG loop (retrieve -> generate):
 python generate.py --n 20          # demo on first 20 queries (fast)
 
-# Preliminary fairness observations:
-python enrich_topk_openalex.py     # affiliations for top-K retrieved papers (set MAILTO!)
+# early fairness signals:
+python enrich_topk_openalex.py     # affiliations for top-k papers (set MAILTO!)
 python fairness_preliminary.py     # category/year skew, Gini, Global-N share
 ```
 
-`evaluate.py` reprints the **retrieval-quality** table above; `fairness_preliminary.py`
-reprints the **fairness** table. Both also persist CSVs under `results/`.
+`evaluate.py` reprints the retrieval-quality table and `fairness_preliminary.py`
+reprints the fairness table — the same numbers shown under **Results**.
 
 ## The relevance-labelling decision (read this)
 
@@ -178,6 +193,17 @@ field.** We enrich from OpenAlex (free, no API key, polite-pool MAILTO).
 `enrich_affiliations_openalex.py` runs the full corpus enrichment for the
 final report (overnight, ~50K papers).
 
+## Reproducibility
+
+Every stage reads a single `config.py` (paths, sample size, year window, category
+prefix, query count/method, encoder names) and a fixed `RANDOM_SEED = 42`, so the
+sample and query set regenerate deterministically. Retrieval is deterministic
+given the index, Llama-3 uses greedy decoding (no sampling variance in answers or
+citations), and the vector store is persisted per encoder. Each script writes a
+self-contained artifact (`sample_50k.jsonl`, `queries.jsonl`,
+`baseline_metrics.csv`, `fairness_preliminary.csv`, `generations_*.jsonl`), so
+every number above regenerates end-to-end from the raw Kaggle snapshot.
+
 ## What's next (Weeks 9–10)
 
 Run the full-corpus OpenAlex enrichment, then build the protected attribute:
@@ -192,24 +218,38 @@ fairness–utility curve (nDCG@10 vs Global-N share). Deliverables: full
 intervals), finalised LaTeX report sections, a 10-slide final deck with real
 numbers, and a Streamlit demo with a fairness toggle.
 
-## Layout
+## Repository layout
 
 ```
-fairsearch-arxiv/
-  requirements.txt
+IR-FairSearch-arXiv-Team6/
   README.md
+  requirements.txt
+  .gitignore
   src/
-    config.py                       # all paths + params
-    sample_arxiv.py                 # stratified 50K sampler
-    build_queries.py                # qrels / query set
-    encoders.py                     # SPECTER2 (adapters) + MiniLM
-    index_chroma.py                 # embed + ChromaDB index
-    evaluate.py                     # BM25 + dense, P@k / R@k / nDCG / MRR
-    generate.py                     # Llama-3-8B-Instruct RAG generation
+    config.py                       # all paths + params, RANDOM_SEED
+    sample_arxiv.py                 # stratified 50K sampler (two-pass reservoir)
+    build_queries.py                # 200-query known-item set + qrels
+    encoders.py                     # SPECTER2 (proximity adapter) + MiniLM
+    index_chroma.py                 # embed + ChromaDB index (one collection/encoder)
+    evaluate.py                     # BM25 + dense: P@k / R@k / nDCG / MRR
+    generate.py                     # Llama-3-8B-Instruct RAG generation (cites sources)
     enrich_topk_openalex.py         # cheap affiliations for retrieved papers
-    enrich_affiliations_openalex.py # FULL corpus enrichment (next phase)
-    fairness_preliminary.py         # category/year/Gini/Global-N
-  data/                             # snapshot + sample + queries + affiliations
-  results/                          # metrics + generations + fairness CSV
-  chroma_store/                     # persistent vector DB
+    enrich_affiliations_openalex.py # full-corpus enrichment (next phase)
+    fairness_preliminary.py         # category / year skew, Gini, Global-N share
+    data/                           # snapshot + sample + queries + affiliations  (gitignored)
+    results/                        # metric CSVs + generation dumps
+    chroma_store/                   # persistent vector DB  (gitignored)
 ```
+
+## Built with
+
+SPECTER2 & MiniLM (sentence embeddings) · ChromaDB (vector index) · rank-bm25
+(lexical control) · Llama-3-8B-Instruct, 4-bit (generation) · OpenAlex
+(affiliation enrichment).
+
+## Data & license
+
+arXiv metadata is distributed under **CC0** via the Cornell-University/arxiv
+Kaggle dataset; affiliations are enriched from **OpenAlex** (openly licensed,
+polite-pool access). This repository is coursework for **CS 6200 — Information
+Retrieval**, Northeastern University.
