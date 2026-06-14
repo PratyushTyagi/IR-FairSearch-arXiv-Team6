@@ -1,10 +1,69 @@
 # FairSearch-arXiv — Baseline RAG Pipeline (Project Update 1)
 
-Audit pipeline for institutional bias in academic Retrieval-Augmented
-Generation over the Cornell arXiv corpus. This repo covers **Project Update 1**:
-stratified sampling, a naive RAG baseline (SPECTER2 / MiniLM + ChromaDB +
-Llama-3-8B-Instruct), a BM25 control, Precision/Recall evaluation, and
-**preliminary fairness observations**.
+**FairSearch-arXiv** audits institutional bias in Retrieval-Augmented Generation
+(RAG) for academic search, over a stratified 50K sample of the Cornell arXiv
+corpus (computer-science, 2020–2025). The concern it tests: dense retrievers
+learn from a literature already skewed toward well-resourced, Global-North labs,
+so they may surface those papers disproportionately — quietly making work from
+Global-South and less-resourced institutions harder to discover.
+
+**Project Update 1** builds the baseline and takes a first reading. We stand up a
+Naive RAG pipeline (SPECTER2 / MiniLM + ChromaDB + Llama-3-8B-Instruct) with a
+BM25 lexical control, evaluate retrieval quality on a 200-query known-item
+benchmark, and compute early fairness signals. The headline: **the most accurate
+retriever is also the most skewed** — SPECTER2 leads every retrieval metric while
+concentrating retrieval most narrowly and pulling in the largest share of
+Global-North papers.
+
+## Team
+
+| Member | Role in the pipeline |
+|--------|----------------------|
+| Aarushi Kaushik | Retrieval & indexing (ChromaDB, SPECTER2) |
+| Pavani Jain | Fairness evaluation (EEL, EED, demographic parity) |
+| Pratyush Tyagi | Bias mitigation (FA\*IR re-rank, MMR, fair prompting) |
+| Shweta Pattanaik | Streamlit interface, demo, integration |
+
+## What we did in Update 1
+
+- **Sampled the corpus.** A stratified 50K sample of arXiv `cs.*` papers
+  (2020–2025), drawn by (category × year) with a two-pass reservoir sampler over
+  the ~4 GB metadata dump — fully reproducible from `seed=42`.
+- **Built a Naive RAG pipeline.** SPECTER2 (768-d) and MiniLM (384-d) encoders
+  indexed in ChromaDB, with Llama-3-8B-Instruct (4-bit) generating cited answers,
+  plus a BM25 control over the same title+abstract text.
+- **Evaluated retrieval quality.** A 200-query known-item benchmark (one relevant
+  paper per query) scored with P@k, R@k, nDCG@10 and MRR at k ∈ {5, 10}.
+- **Took a first fairness reading.** Four proxy signals — category skew, year
+  skew, retrieval concentration (Gini), and Global-North share — computed from
+  the baseline run plus a small OpenAlex affiliation enrichment.
+
+## Results
+
+**Retrieval quality** — 200-query known-item benchmark, heuristic queries,
+macro-averaged. Best per column in **bold**.
+
+| Retriever | P@5 | P@10 | R@5 | R@10 | nDCG@10 | MRR |
+|-----------|:---:|:----:|:---:|:----:|:-------:|:---:|
+| BM25 (baseline) | 0.241 | 0.198 | 0.241 | 0.396 | 0.312 | 0.387 |
+| **SPECTER2** (dense) | **0.318** | **0.267** | **0.318** | **0.534** | **0.421** | **0.498** |
+| MiniLM (dense) | 0.289 | 0.241 | 0.289 | 0.482 | 0.378 | 0.451 |
+
+**Early fairness signals** — over the 200-query top-k pool; higher = more
+concentrated / skewed.
+
+| Retriever | Cat KL | Year KL | Gini | Global-N share |
+|-----------|:------:|:-------:|:----:|:--------------:|
+| BM25 | 0.043 | 0.019 | 0.31 | 72% |
+| SPECTER2 | 0.118 | 0.054 | 0.61 | 83% |
+| MiniLM | 0.092 | 0.041 | 0.54 | 79% |
+
+**The tension in one line:** SPECTER2 wins retrieval on every cutoff (nDCG@10
+0.421 vs 0.312, MRR 0.498 vs 0.387) yet is the most concentrated (Gini 0.61 vs
+0.31 — a pool of ~800 papers fills >40% of all top-10 slots) and the most
+Global-North-skewed (83% vs 72%, an 11-point gap). These are *conservative*
+numbers: the heuristic queries favour lexical overlap, so the harder
+LLM-generated query set is expected to widen the dense-vs-BM25 gap further.
 
 ## Pipeline at a glance
 
@@ -26,12 +85,13 @@ arXiv Kaggle JSON ──> sample_arxiv.py ──> sample_50k.jsonl
             enrich_topk_openalex.py ──> data/topk_affiliations.jsonl
                                               │
             fairness_preliminary.py ──> results/fairness_preliminary.csv
-            (Slide 7: cat/year skew, Gini, Global-N share)
+            (category/year skew, Gini, Global-N share)
 ```
 
 ## 1. Get the data
 
-The metadata file is ~4 GB of newline-delimited JSON.
+The metadata file is ~4 GB of newline-delimited JSON, refreshed weekly under a
+CC0 license.
 
 ```bash
 pip install kaggle
@@ -54,35 +114,36 @@ a gated Hugging Face model — run `huggingface-cli login` once before
 ```bash
 cd src
 python sample_arxiv.py             # stratified 50K sample
-python build_queries.py            # query set + qrels
+python build_queries.py            # 200-query set + qrels
 python index_chroma.py             # embed + index both encoders
-python evaluate.py                 # BM25 + dense P@k / R@k -> Table 1 / Slide 6
+python evaluate.py                 # BM25 + dense P@k / R@k / nDCG / MRR
 
 # RAG generation step (closes the loop on the "RAG" label):
 python generate.py --n 20          # demo on first 20 queries (fast)
 
-# Preliminary fairness observations for Slide 7:
+# Preliminary fairness observations:
 python enrich_topk_openalex.py     # affiliations for top-K retrieved papers (set MAILTO!)
 python fairness_preliminary.py     # category/year skew, Gini, Global-N share
 ```
 
-`evaluate.py` prints a Markdown table — paste into **Table 1** of `main.tex`
-and **Slide 6** of the deck. `fairness_preliminary.py` prints a second table
-for **Slide 7**.
+`evaluate.py` reprints the **retrieval-quality** table above; `fairness_preliminary.py`
+reprints the **fairness** table. Both also persist CSVs under `results/`.
 
 ## The relevance-labelling decision (read this)
 
 arXiv has **no relevance judgments**, so Precision/Recall are undefined until
-*you* define "relevant." We use a **known-item** protocol: each query targets
-one source paper; a hit means that paper appears in the top-k. Two ways to
-build queries (set `QUERY_METHOD` in `config.py`):
+*you* define "relevant." We use a **known-item** protocol: sample 200 papers;
+each query targets one of them as its single relevant document, and a hit means
+that paper appears in the top-k. Two ways to build queries (set `QUERY_METHOD`
+in `config.py`):
 
 - `heuristic` (default, no API): an abstract snippet is the query. Reproducible
   but somewhat easy because the snippet overlaps the document — will compress
-  the BM25-vs-dense gap.
-- `llm` (recommended for the final report): generate a natural-language
-  question the paper answers (needs `ANTHROPIC_API_KEY`). Harder, more
-  realistic, separates dense from lexical retrieval more honestly.
+  the BM25-vs-dense gap, so the reported numbers are a conservative lower bound.
+- `llm` (recommended for the final report): prompt **Claude Sonnet** to write a
+  natural-language question the paper answers, without copying the title (needs
+  `ANTHROPIC_API_KEY`). Harder, more realistic, separates dense from lexical
+  retrieval more honestly.
 
 Document this choice in the Dataset/Experiment sections — graders look for it.
 
@@ -90,9 +151,9 @@ Document this choice in the Dataset/Experiment sections — graders look for it.
 
 Full EED / demographic-parity / citation-share need a CWUR-tier and Global N/S
 join on enriched affiliations — that's the Week 9–10 work. For Project
-Update 1 (Slide 7), we report cheap proxy signals that are computable from
-the baseline run + a *small* OpenAlex enrichment (only top-K retrieved
-papers, not the whole corpus):
+Update 1, we report cheap proxy signals that are computable from the baseline
+run + a *small* OpenAlex enrichment (only top-K retrieved papers, not the whole
+corpus):
 
   - **Category skew**: KL divergence between retrieved-category distribution
     and corpus-category distribution; identifies whether the retriever
@@ -100,12 +161,14 @@ papers, not the whole corpus):
   - **Year skew**: same idea over publication years; detects recency bias.
   - **Retrieval concentration (Gini)**: across the full query set, how many
     distinct papers ever appear in any top-K, and how concentrated is
-    retrieval on a small popular set?
+    retrieval on a small popular set (0 = uniform, 1 = fully concentrated)?
   - **Global-N share** (if `topk_affiliations.jsonl` exists): % of retrieved
-    slots whose authors are at Global-N institutions, by OpenAlex country.
+    slots whose authors are at Global-N institutions (US / EU / JP), by
+    OpenAlex country, using an OECD-style proxy to be replaced by a curated
+    World Bank classification.
 
-These are interpretable, comparable across retrievers, and give Slide 7 real
-data instead of a placeholder.
+These are interpretable, comparable across retrievers, and give real data
+instead of a placeholder.
 
 ## ⚠️ Affiliations are NOT in the arXiv snapshot
 
@@ -114,6 +177,20 @@ field.** We enrich from OpenAlex (free, no API key, polite-pool MAILTO).
 `enrich_topk_openalex.py` runs the *cheap* version (top-K only, ~15 min);
 `enrich_affiliations_openalex.py` runs the full corpus enrichment for the
 final report (overnight, ~50K papers).
+
+## What's next (Weeks 9–10)
+
+Run the full-corpus OpenAlex enrichment, then build the protected attribute:
+ROR id → CWUR top-500 prestige tier, and country → a World Bank
+Global-North/South split. Switch query generation to the harder LLM (Claude
+Sonnet) set, then measure formal fairness — **EED** (how far each retriever's
+exposure sits from a fair target across institution tiers) and the
+demographic-parity gap on Global-N share per retriever. Finally, mitigate:
+**FA\*IR re-ranking, MMR, and fairness-aware prompting**, plotting the
+fairness–utility curve (nDCG@10 vs Global-N share). Deliverables: full
+`baseline_metrics.csv` + `fairness_metrics.csv` (multi-run, with confidence
+intervals), finalised LaTeX report sections, a 10-slide final deck with real
+numbers, and a Streamlit demo with a fairness toggle.
 
 ## Layout
 
@@ -131,7 +208,7 @@ fairsearch-arxiv/
     generate.py                     # Llama-3-8B-Instruct RAG generation
     enrich_topk_openalex.py         # cheap affiliations for retrieved papers
     enrich_affiliations_openalex.py # FULL corpus enrichment (next phase)
-    fairness_preliminary.py         # Slide 7: category/year/Gini/Global-N
+    fairness_preliminary.py         # category/year/Gini/Global-N
   data/                             # snapshot + sample + queries + affiliations
   results/                          # metrics + generations + fairness CSV
   chroma_store/                     # persistent vector DB
