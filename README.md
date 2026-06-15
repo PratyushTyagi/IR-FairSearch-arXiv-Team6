@@ -185,13 +185,7 @@ corpus):
 These are interpretable, comparable across retrievers, and give real data
 instead of a placeholder.
 
-## ⚠️ Affiliations are NOT in the arXiv snapshot
 
-The Kaggle snapshot provides `authors_parsed` (names only) — **no affiliation
-field.** We enrich from OpenAlex (free, no API key, polite-pool MAILTO).
-`enrich_topk_openalex.py` runs the *cheap* version (top-K only, ~15 min);
-`enrich_affiliations_openalex.py` runs the full corpus enrichment for the
-final report (overnight, ~50K papers).
 
 ## Reproducibility
 
