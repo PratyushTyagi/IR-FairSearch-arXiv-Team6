@@ -136,6 +136,17 @@ Underrepresented papers in every prefix), then measured the utility cost with
 > one, moves the elite share *inconsistently* (down to 2.0% at k=5 but up to 3.9% at
 > k=10) — so it is not a reliable institutional-fairness lever here.
 
+**The fairness–utility frontier** (`12_fairness_utility_tradeoff.py` →
+`fairness_utility_pareto.png`) sweeps each re-ranker's control knob (MMR λ ∈ [0,1];
+Fair-Top-K's representation target ∈ [0,1]) and plots NDCG@k against elite share.
+**Fair-Top-K Pareto-dominates MMR:** it can drive the Privileged share all the way to
+**0% at only −0.003 NDCG** (both k=10 and k=50), tracing a near-horizontal frontier,
+while MMR loses up to ~0.11 NDCG@10 *without even reaching parity*. So the fairness
+lever we ship is not just cheap at one setting — it is cheap across the entire
+operating range, and strictly better than the diversity baseline.
+
+![Fairness–utility frontier](fairness_utility_pareto.png)
+
 ### 4. Generative faithfulness + demo *(next)*
 
 RQ2 — whether Llama-3-8B-Instruct's cited answers over-rely on consensus/elite
