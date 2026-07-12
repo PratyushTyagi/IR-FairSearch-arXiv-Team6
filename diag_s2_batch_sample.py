@@ -8,7 +8,10 @@ import time
 
 import requests
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 URL = "https://api.semanticscholar.org/graph/v1/paper/batch"
 

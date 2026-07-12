@@ -11,7 +11,10 @@ from tqdm import tqdm
 sys.path.insert(0, os.path.dirname(__file__))
 from openalex_client import first_author_first_institution, norm_doi
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 OUT_PARQUET = os.path.join(ROOT, "data", "enrichment_results.parquet")
 DOI_CACHE = os.path.join(ROOT, "cache", "doi")

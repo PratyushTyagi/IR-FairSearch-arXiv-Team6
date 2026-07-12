@@ -7,7 +7,10 @@ import time
 sys.path.insert(0, os.path.dirname(__file__))
 from s2_client import SemanticScholarClient, first_author_first_affiliation, norm_text
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 CACHE = os.path.join(ROOT, "cache", "s2")
 N = 30

@@ -21,7 +21,10 @@ from openalex_client import (
     norm_doi,
 )
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 OUT_PARQUET = os.path.join(ROOT, "data", "enrichment_results.parquet")
 CACHE = os.path.join(ROOT, "cache")

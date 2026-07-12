@@ -28,7 +28,10 @@ import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 FINAL_JSONL = os.path.join(ROOT, "data", "final_enriched.jsonl")
 INDEX_PATH = os.path.join(ROOT, "data", "rag_index.faiss")
 DOCIDS_PARQUET = os.path.join(ROOT, "data", "rag_docids.parquet")

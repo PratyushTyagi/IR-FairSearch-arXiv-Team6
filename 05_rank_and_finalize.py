@@ -31,7 +31,10 @@ from collections import Counter
 
 import pandas as pd
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 ENRICH = os.path.join(ROOT, "data", "enrichment_results.parquet")
 RANK_CSV = os.path.join(ROOT, "data", "institution_ranking.csv")

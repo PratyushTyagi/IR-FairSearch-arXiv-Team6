@@ -17,7 +17,10 @@ import unicodedata
 
 import pandas as pd
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SRC = os.path.join(ROOT, "arxiv-metadata-oai-snapshot.json")
 OUT_DIR = os.path.join(ROOT, "data")
 os.makedirs(OUT_DIR, exist_ok=True)

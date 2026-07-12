@@ -9,7 +9,10 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from openalex_client import OpenAlexClient, norm_doi, first_author_first_institution
 
-ROOT = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
 SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 CACHE = os.path.join(ROOT, "cache")
 

@@ -14,7 +14,11 @@ import time
 import requests
 
 EMAIL = "jain.pav@northeastern.edu"
-SAMPLE = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project/data/sample_50k.jsonl"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
+SAMPLE = os.path.join(ROOT, "data", "sample_50k.jsonl")
 URL = "https://api.openalex.org/works"
 N = 80   # try around the point where the prior run blew up
 DELAY = 0.12  # ~8 req/s

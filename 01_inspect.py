@@ -8,7 +8,11 @@ import os
 import sys
 from collections import Counter
 
-PATH = "/Users/pavanijain/Desktop/Kaggle_Preprocessing_Project/arxiv-metadata-oai-snapshot.json"
+ROOT = os.environ.get(
+    "FAIRSEARCH_ROOT",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+)
+PATH = os.path.join(ROOT, "data", "arxiv-metadata-oai-snapshot.json")
 
 
 def main():
