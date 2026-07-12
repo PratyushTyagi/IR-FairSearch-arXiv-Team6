@@ -1,0 +1,59 @@
+{
+  "config": {
+    "model": "sentence-transformers/allenai-specter",
+    "corpus": "final_enriched.jsonl",
+    "n_docs": 49652,
+    "n_top_uni": 1182,
+    "n_queries": 100,
+    "query_protocol": "first 30 abstract tokens (known-item heuristic), seed=42",
+    "relevance": "shares >=1 arXiv category token with the query paper",
+    "group_attribute": "top_uni (top-50 mean-citation institutions from 05_rank_and_finalize)",
+    "bootstrap_resamples": 1000
+  },
+  "metrics": {
+    "k=10": {
+      "mean_P@k": 0.536,
+      "statistical_parity_difference": {
+        "mean": 4.501263545953057e-05,
+        "ci95": [
+          -4.1869571665095905e-05,
+          0.00014034473305263689
+        ],
+        "definition": "P(retrieved|top_uni) - P(retrieved|non_top_uni), mean over queries"
+      },
+      "equalized_odds": {
+        "value": 0.001352432279752919,
+        "ci95": [
+          0.00012622125835560583,
+          0.003976740312934533
+        ],
+        "mean_tpr_gap": -0.001352432279752919,
+        "mean_fpr_gap": 8.476607937485008e-05,
+        "definition": "max(|mean TPR gap|, |mean FPR gap|), gaps are top_uni minus non_top_uni"
+      },
+      "n_queries_evaluated": 100
+    },
+    "k=100": {
+      "mean_P@k": 0.4523,
+      "statistical_parity_difference": {
+        "mean": 5.146485556958819e-05,
+        "ci95": [
+          -0.0003385300891294831,
+          0.0004416764641268255
+        ],
+        "definition": "P(retrieved|top_uni) - P(retrieved|non_top_uni), mean over queries"
+      },
+      "equalized_odds": {
+        "value": 0.003562391996021958,
+        "ci95": [
+          0.0002498284305586111,
+          0.018550426887489986
+        ],
+        "mean_tpr_gap": 0.003562391996021958,
+        "mean_fpr_gap": -7.724691370205263e-05,
+        "definition": "max(|mean TPR gap|, |mean FPR gap|), gaps are top_uni minus non_top_uni"
+      },
+      "n_queries_evaluated": 100
+    }
+  }
+}

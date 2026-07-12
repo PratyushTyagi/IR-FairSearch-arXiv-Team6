@@ -1,0 +1,7 @@
+total	3080258
+dups_by_id	88
+dups_by_doi	2374
+dups_by_title	6326
+unique_after_dedup	3071765
+sample_size	50000
+seed	42
