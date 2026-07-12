@@ -14,12 +14,12 @@
 When you search academic papers with a modern RAG system — a dense retriever that
 finds papers, plus an LLM that reads them and writes a cited answer — the retriever
 learns from a body of literature that already over-represents large, well-resourced,
-high-prestige institutions. So it can quietly surface those papers more often,
+high-prestige institutions. So it could quietly surface those papers more often,
 making work from smaller or less-resourced institutions harder to find.
 
-**FairSearch-arXiv** measures whether that happens, and tries to fix it. We build a
-RAG pipeline over a 50,000-paper sample of the arXiv corpus, label each paper by the
-global standing of its first-author institution, and then ask three questions:
+**FairSearch-arXiv** measures whether that actually happens, and tries to fix it. We
+build a RAG pipeline over a 50,000-paper sample of the arXiv corpus, label each paper
+by the prestige of its first-author institution, and then ask three questions:
 
 1. **Does retrieval favour high-prestige institutions?** (retrieval bias audit)
 2. **Does the LLM's cited answer over-rely on those same sources?** (generative faithfulness)
@@ -41,68 +41,94 @@ University.
 
 ## Where the project is right now
 
-Think of it as three layers, built bottom-up. The **data layer** and the
-**demographic layer** are done; the **audit + mitigation layer** is wired up and
-being run.
+Built bottom-up in four stages. The first three are **done with results**; the
+generation-faithfulness study and the demo are the remaining work.
 
-### 1. Data layer — cleaned, sampled, enriched *(done)*
+### 1. Data — cleaned, sampled, enriched *(done)*
 
 - **Read the whole corpus.** Streamed the full arXiv metadata dump —
-  **3,080,258 records, 0 parse errors** — and checked field coverage (DOIs are
-  present on only ~43% of papers, which is why we don't rely on DOI alone).
-- **Deduplicated it.** Removed duplicates by id, DOI, and title, leaving
-  **3,071,765 unique records**.
-- **Took a reproducible sample.** Drew a **50,000-paper sample** with a fixed seed
-  (`seed=42`) so anyone can regenerate the exact same set.
-- **Added institution affiliations.** Looked each paper up in two open sources —
-  **Semantic Scholar** (matched by arXiv id) and **OpenAlex** (matched by DOI) —
-  and resolved **49,652 of 50,000 papers (99.3%)**. About **20,924** of them carry a
-  clean first-author institution, spanning **3,473 distinct institutions**.
+  **3,080,258 records, 0 parse errors** — and checked field coverage (DOIs exist on
+  only ~43% of papers, so we don't rely on DOI alone).
+- **Deduplicated it** by id, DOI, and title → **3,071,765 unique records**.
+- **Sampled 50,000 papers** with a fixed seed (`seed=42`) so anyone regenerates the
+  same set.
+- **Added institution affiliations** from two open sources — **Semantic Scholar**
+  (by arXiv id) and **OpenAlex** (by DOI) — resolving **49,652 / 50,000 papers
+  (99.3%)**. About **20,924** carry a clean first-author institution across
+  **3,473 distinct institutions**.
 
-### 2. Demographic layer — the prestige proxy *(done)*
+### 2. Prestige labels *(done)*
 
-This is the label the fairness analysis depends on. We join a global university
-ranking (QS 2026) onto each paper's first-author institution and tag it:
+Two ways to mark a paper as "elite," so the fairness analysis has a group to compare:
 
-- **`Privileged`** — first-author institution ranks in the global **Top 20**.
-- **`Underrepresented`** — everything else.
+- **`top_uni`** *(used in the audit below)* — the paper's first-author institution
+  is among the **top 50 by mean citations** in our sample. This flags **1,182 papers
+  (2.38%)** and is fully data-driven from our own corpus.
+- **`proxy_group`** *(QS Top-20)* — a parallel label from an external ranking (QS
+  2026): `Privileged` if the institution is global Top-20, else `Underrepresented`.
+  On the current run it tags **1,638 papers Privileged** and **48,014
+  Underrepresented**; the Top-20 schools present include Berkeley, Cambridge,
+  Caltech, ETH Zürich, Oxford, MIT, Harvard, Peking, Stanford, and Tsinghua.
 
-Each paper also gets a prestige tier (`top20` / `top50` / … / `unranked`) and a
-percentile, so we can slice results finely later.
+> **What these labels mean.** They describe the *institution*, from the *first
+> author's* affiliation only — never an individual person's background. A top-tier
+> affiliation doesn't make someone "privileged," and being off a ranked list doesn't
+> make someone "underrepresented" (most of the world's ~25,000+ universities are
+> never ranked). We use these for **corpus-level** analysis of what shows up in
+> search, not for judgements about people.
 
-> **Important — what the label means.** `proxy_group` describes the *institution*,
-> based only on the *first author's* affiliation. It is **not** a statement about any
-> individual person's background. A Top-20 affiliation doesn't make someone
-> "privileged," and being off the ranked list doesn't make someone
-> "underrepresented" — most of the world's ~25,000+ universities are simply never
-> ranked, and many strong research bodies (national labs, CNRS, the Chinese Academy
-> of Sciences, specialist institutes) don't fit a reputation ranking at all. We use
-> this only for **corpus-level** analysis of who shows up in search results, never
-> for judgements about people.
+> **Note — the QS split is still a demo.** The bundled ranking file holds only the
+> top ~37 schools so the code runs out of the box, so *every* institution ranked 38+
+> currently lands in `unranked` / `Underrepresented` (tier counts: top20 = 1,638,
+> top50 = 633, everything else unranked). The 1,638 / 48,014 split above is therefore
+> an illustrative artifact, not a faithful result — load the full QS export to
+> populate the lower tiers. One inherited quirk: the normalizer collapses all
+> University of California campuses to one key, so "Berkeley" (339 papers) really
+> means system-wide UC. Because of this, the audit results below use the complete,
+> data-driven `top_uni` group rather than `proxy_group`.
 
-> **Note on the sample data.** The ranking file bundled in the repo only contains
-> the top ~36 universities so the code runs out of the box. Run against that seed and
-> everything below rank 36 is treated as unranked — so the split is a **demo, not a
-> real result**. Real labels need the full QS export, which we load for the actual
-> analysis.
+### 3. Retrieval + bias audit + mitigation *(done)*
 
-### 3. Audit + mitigation layer — being run now
+**Retrieval quality.** A MiniLM-L6-v2 FAISS index over all 49,652 papers retrieves
+with precision **0.628 / 0.589 / 0.572** at k = 1 / 5 / 10 (1,000-query test,
+same-category relevance). SPECTER2 is the stronger encoder used for the fairness
+study; its document embeddings are materialized over the full corpus (49,652 × 768).
 
-- **Retrieval works.** A MiniLM-L6-v2 dense index over all 49,652 papers (via FAISS)
-  retrieves with precision around **0.57–0.63** across the top 1, 5, and 10 results
-  on a 1,000-query test. A stronger SPECTER2 encoder is being indexed alongside it.
-- **The fairness audit** (RQ1) compares how often `Privileged` vs `Underrepresented`
-  papers reach the Top-10, using **Statistical Parity Difference** and
-  **Equalized Odds**. The labels and retrieval results it needs are in place.
-- **Generative faithfulness** (RQ2) will check whether the LLM's cited answers lean
-  toward consensus/elite sources, scored with an **LLM-as-a-judge** setup.
-- **Mitigation** (RQ3) re-ranks results with **MMR** and **Fair-Top-K** and measures
-  the trade-off — how much search quality (NDCG@10, MRR) we give up to close the gap.
+**The bias audit (RQ1).** Over 100 known-item queries we measured how often
+elite-institution (`top_uni`) papers reach the Top-k, using **Statistical Parity
+Difference (SPD)** and **Equalized Odds (EO)** with 1,000-sample bootstrap CIs.
 
-An earlier baseline comparison found the pattern we expected: the most *accurate*
-retriever (SPECTER2) was also the most *concentrated* and most skewed toward
-high-resource institutions. Confirming and then reducing that gap is the whole point
-of the remaining work.
+> **Headline finding: the retriever tracks corpus prevalence — no meaningful
+> parity gap.** `top_uni` papers are 2.38% of the corpus and fill ~2.6–2.9% of the
+> Top-10 pool. SPD is statistically indistinguishable from zero (its 95% CI spans
+> zero at every k), and the Equalized-Odds gap is tiny (~0.001–0.002). This is a
+> more careful, per-query measurement than the concentration proxies (Gini,
+> Global-North share) we reported in the first phase, and it does **not** reproduce
+> a large elite-institution skew on this group.
+
+**Mitigation (RQ3).** We re-ranked with **MMR** (diversity, best λ = 0.7) and
+**Fair-Top-K** (a floor quota that guarantees representation of non-elite papers),
+then measured the utility cost.
+
+| Method (SPECTER) | k | P@k | Top-elite share | SPD | Equalized Odds |
+|---|:--:|:--:|:--:|:--:|:--:|
+| Baseline | 5 | 0.554 | 2.6% | ≈0 (CI spans 0) | 0.0021 |
+| Baseline | 10 | 0.536 | 2.9% | ≈0 (CI spans 0) | 0.0014 |
+| MMR (λ=0.7) | 5 | 0.504 | 2.2% | ≈0 | 0.0019 |
+| MMR (λ=0.7) | 10 | 0.515 | 3.0% | ≈0 | 0.0012 |
+| **Fair-Top-K** | 5 | **0.554** | 2.4% | ≈0 | 0.0021 |
+| **Fair-Top-K** | 10 | **0.536** | 2.6% | ≈0 | 0.0014 |
+
+> **The fairness–utility trade-off, in one line:** because the baseline is already
+> near parity, there's little to fix — and it shows in the trade-off. **Fair-Top-K
+> is effectively free** (precision unchanged at 0.554 / 0.536, elite share nudged
+> down), while **MMR pays ~2–5 precision points for no measurable fairness gain**.
+
+### 4. Generative faithfulness + demo *(next)*
+
+RQ2 — whether Llama-3-8B-Instruct's cited answers over-rely on consensus/elite
+sources, scored with an **LLM-as-a-judge** setup and RAGAS — plus the Streamlit demo,
+are the remaining pieces.
 
 ---
 
@@ -122,6 +148,7 @@ arXiv metadata dump ─> inspect ─> dedup + sample (seed=42) ─> sample_50k.j
                    ┌────────────────┼─────────────────────┐
             retrieval audit   cited generation        re-ranking
             (SPD, Eq. Odds)   (Llama-3 + LLM judge)   (MMR, Fair-Top-K)
+              [done]              [next]                 [done]
 ```
 
 ---
@@ -160,6 +187,8 @@ python scripts/07_demographic_enrich.py \       # prestige proxy -> final_enrich
   --ranking data/qs_world_university_rankings_2026.csv --source QS-2026 --n 1501 \
   --elite-mode rank --elite-rank 20 --n-global 28000
 python scripts/06_rag_baseline.py               # embed + FAISS index + retrieval eval
+python scripts/08_specter_fairness_baseline.py  # SPECTER audit: SPD, Equalized Odds
+python scripts/09_rerank.py                     # MMR + Fair-Top-K, fairness-utility trade-off
 ```
 
 Everything keys off a fixed `seed=42`, and each step writes a self-contained file, so
@@ -176,30 +205,34 @@ IR-FairSearch-arXiv-Team6/
   README.md
   requirements.txt
   scripts/
-    01_inspect.py            # stream + validate the raw dump, field coverage
-    02_sample.py             # dedup (id/DOI/title) + reproducible 50K sample
-    03_enrich_openalex.py    # affiliations by DOI (OpenAlex)
-    04_enrich_s2.py          # affiliations by arXiv id / title (Semantic Scholar)
-    05_rank_and_finalize.py  # canonical institution keys + ranking + final_enriched
-    06_rag_baseline.py       # encode + FAISS index + retrieval eval
-    07_demographic_enrich.py # QS join -> Privileged / Underrepresented proxy
-    evaluate.py              # retrieval fairness audit (SPD, Equalized Odds)
-    generate.py              # cited answers (Llama-3-8B) + LLM-as-a-judge
-    rerank.py                # MMR + Fair-Top-K, fairness-utility trade-off
-  data/                      # snapshot + sample + enriched files  (gitignored)
-  results/                   # metric CSVs + generation dumps
+    01_inspect.py                  # stream + validate the raw dump, field coverage
+    02_sample.py                   # dedup (id/DOI/title) + reproducible 50K sample
+    03_enrich_openalex.py          # affiliations by DOI (OpenAlex)
+    04_enrich_s2.py                # affiliations by arXiv id / title (Semantic Scholar)
+    05_rank_and_finalize.py        # canonical institution keys + ranking + final_enriched
+    06_rag_baseline.py             # MiniLM encode + FAISS index + retrieval eval
+    07_demographic_enrich.py       # QS join -> Privileged / Underrepresented proxy
+    08_specter_fairness_baseline.py# SPECTER audit: SPD + Equalized Odds (bootstrap CIs)
+    09_rerank.py                   # MMR + Fair-Top-K, fairness-utility trade-off
+    generate.py                    # (next) cited answers (Llama-3) + LLM-as-a-judge
+  data/                            # snapshot + sample + enriched + indexes  (gitignored)
+  results/                         # metric CSVs + bias-score JSON + generation dumps
 ```
+
+Key result files: `rag_eval.csv` (retrieval quality), `baseline_bias_scores.json`
+(RQ1 audit), `comparison_table.csv` / `rerank_bias_scores.json` (RQ3 mitigation),
+`mmr_lambda_sweep.csv` (λ selection). The demographic layer emits
+`institution_ranking_enriched.csv`, `university_global_ranking_normalized.csv`,
+`final_enriched_demographics.jsonl`, and `demographic_enrichment_summary.txt`.
 
 ---
 
 ## What's left
 
-- Load the **full** university ranking so the prestige labels are complete, not a demo.
-- Finish **SPECTER2** indexing and run the full retrieval-bias audit on both encoders
-  plus a BM25 baseline.
-- Run the **generation** step and score answer faithfulness with an LLM judge and
-  RAGAS.
-- Apply **MMR** and **Fair-Top-K** re-ranking and plot the fairness-vs-quality curve.
+- Load the **full** QS ranking so the `proxy_group` labels are complete, not a demo,
+  and re-run the audit sliced by QS Top-20 alongside `top_uni`.
+- Run the **generation** step (RQ2): Llama-3-8B cited answers, Pro-Consensus vs
+  Dissenting citation analysis, LLM-as-a-judge scoring, and RAGAS.
 - Ship a **Streamlit** demo with a fairness toggle, plus the final report and slides.
 
 ## Data & license
