@@ -59,16 +59,24 @@ generation-faithfulness study and the demo are the remaining work.
 
 ### 2. Prestige labels *(done)*
 
-Two ways to mark a paper as "elite," so the fairness analysis has a group to compare:
+Every paper carries a first-author-institution prestige label, so the fairness
+analysis has two groups to compare. We use **two** definitions and report the audit
+on both:
 
-- **`top_uni`** *(used in the audit below)* — the paper's first-author institution
-  is among the **top 50 by mean citations** in our sample. This flags **1,182 papers
-  (2.38%)** and is fully data-driven from our own corpus.
-- **`proxy_group`** *(QS Top-20)* — a parallel label from an external ranking (QS
-  2026): `Privileged` if the institution is global Top-20, else `Underrepresented`.
-  On the current run it tags **1,638 papers Privileged** and **48,014
-  Underrepresented**; the Top-20 schools present include Berkeley, Cambridge,
-  Caltech, ETH Zürich, Oxford, MIT, Harvard, Peking, Stanford, and Tsinghua.
+- **`proxy_group` (QS Top-20) — the primary group.** From an external ranking
+  (QS World University Rankings 2026): `Privileged` if the first-author institution
+  is a global **Top-20** university, else `Underrepresented`. This tags **1,638
+  papers Privileged (3.30%)** and **48,014 Underrepresented**. The 20 elite schools
+  present include Berkeley, Cambridge, Caltech, ETH Zürich, Oxford, MIT, Harvard,
+  Peking, Stanford, Cornell, Imperial, Tsinghua, NUS, UCL, Chicago, UPenn, NTU,
+  Melbourne, UNSW, and HKU. This matches the assignment's "Privileged (Top-20
+  institutions) vs. Underrepresented" definition. Built for the full corpus by
+  `10_build_proxy_labels.py`.
+- **`top_uni` (citation-based) — a robustness check.** The first-author institution
+  is among the **top 50 by mean citations** in our own sample. This flags **1,182
+  papers (2.38%)** and is fully data-driven from the corpus (no external ranking).
+  We keep it because it operationalizes "elite" a different way; the audit
+  conclusions hold under both.
 
 > **What these labels mean.** They describe the *institution*, from the *first
 > author's* affiliation only — never an individual person's background. A top-tier
@@ -77,58 +85,63 @@ Two ways to mark a paper as "elite," so the fairness analysis has a group to com
 > never ranked). We use these for **corpus-level** analysis of what shows up in
 > search, not for judgements about people.
 
-> **Note — the QS split is still a demo.** The bundled ranking file holds only the
-> top ~37 schools so the code runs out of the box, so *every* institution ranked 38+
-> currently lands in `unranked` / `Underrepresented` (tier counts: top20 = 1,638,
-> top50 = 633, everything else unranked). The 1,638 / 48,014 split above is therefore
-> an illustrative artifact, not a faithful result — load the full QS export to
-> populate the lower tiers. One inherited quirk: the normalizer collapses all
-> University of California campuses to one key, so "Berkeley" (339 papers) really
-> means system-wide UC. Because of this, the audit results below use the complete,
-> data-driven `top_uni` group rather than `proxy_group`.
+> **Two honest caveats on the QS label.** (1) The bundled QS file resolves the full
+> **Top-20** set (all 20 elite institutions are present, so the binary
+> Privileged/Underrepresented split is faithful), but it does **not** populate the
+> finer tiers (top50/top100/…) — those collapse into `unranked`. That only affects
+> gradations *within* the Underrepresented group, not the Top-20 contrast we audit.
+> (2) The institution normalizer collapses all University of California campuses to
+> one key, so "Berkeley" (339 papers) really means system-wide UC — a small upward
+> bias on the Privileged count.
 
 ### 3. Retrieval + bias audit + mitigation *(done)*
 
 **Retrieval quality.** A MiniLM-L6-v2 FAISS index over all 49,652 papers retrieves
 with precision **0.628 / 0.589 / 0.572** at k = 1 / 5 / 10 (1,000-query test,
-same-category relevance). SPECTER2 is the stronger encoder used for the fairness
+same-category relevance). SPECTER is the stronger encoder used for the fairness
 study; its document embeddings are materialized over the full corpus (49,652 × 768).
 
 **The bias audit (RQ1).** Over 100 known-item queries we measured how often
-elite-institution (`top_uni`) papers reach the Top-k, using **Statistical Parity
-Difference (SPD)** and **Equalized Odds (EO)** with 1,000-sample bootstrap CIs.
+Privileged (QS Top-20) papers reach the Top-k, using **Statistical Parity Difference
+(SPD)** and **Equalized Odds (EO)** with 1,000-sample bootstrap CIs.
 
-> **Headline finding: the retriever tracks corpus prevalence — no meaningful
-> parity gap.** `top_uni` papers are 2.38% of the corpus and fill ~2.6–2.9% of the
-> Top-10 pool. SPD is statistically indistinguishable from zero (its 95% CI spans
-> zero at every k), and the Equalized-Odds gap is tiny (~0.001–0.002). This is a
-> more careful, per-query measurement than the concentration proxies (Gini,
-> Global-North share) we reported in the first phase, and it does **not** reproduce
-> a large elite-institution skew on this group.
+> **Headline finding: retrieval tracks corpus prevalence at the top — no meaningful
+> parity gap at k=10, a mild elite skew deeper.** Privileged papers are 3.30% of the
+> corpus and fill exactly **3.30% of the Top-10** (SPD ≈ 0, 95% CI spans zero;
+> EO ≈ 7e-4). By Top-100 their share rises to **3.59%** with SPD +1.8e-4 and EO
+> ~0.012 — a small over-representation that appears below the very top ranks. The
+> `top_uni` robustness check gives the same qualitative picture.
 
-**Mitigation (RQ3).** We re-ranked with **MMR** (diversity, best λ = 0.7) and
-**Fair-Top-K** (a floor quota that guarantees representation of non-elite papers),
-then measured the utility cost.
+**Mitigation (RQ3).** We re-ranked the SPECTER Top-50 pool with **MMR** (diversity,
+λ swept over {0.3, 0.5, 0.7}, best λ = 0.7 by an NDCG-weighted composite) and
+**Fair-Top-K** (a DetGreedy floor quota guaranteeing a minimum share of
+Underrepresented papers in every prefix), then measured the utility cost with
+**NDCG@10** and **MRR** alongside the fairness metrics.
 
-| Method (SPECTER) | k | P@k | Top-elite share | SPD | Equalized Odds |
-|---|:--:|:--:|:--:|:--:|:--:|
-| Baseline | 5 | 0.554 | 2.6% | ≈0 (CI spans 0) | 0.0021 |
-| Baseline | 10 | 0.536 | 2.9% | ≈0 (CI spans 0) | 0.0014 |
-| MMR (λ=0.7) | 5 | 0.504 | 2.2% | ≈0 | 0.0019 |
-| MMR (λ=0.7) | 10 | 0.515 | 3.0% | ≈0 | 0.0012 |
-| **Fair-Top-K** | 5 | **0.554** | 2.4% | ≈0 | 0.0021 |
-| **Fair-Top-K** | 10 | **0.536** | 2.6% | ≈0 | 0.0014 |
+| Method (SPECTER) | k | NDCG@k | MRR | P@k | Privileged share | SPD | EO |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Baseline | 5 | 0.565 | 0.697 | 0.554 | 2.8% | ≈0 (CI spans 0) | 0.0004 |
+| Baseline | 10 | 0.556 | 0.697 | 0.536 | 3.3% | ≈0 (CI spans 0) | 0.0007 |
+| MMR (λ=0.7) | 5 | 0.523 | 0.702 | 0.504 | 2.0% | ≈0 | 0.0015 |
+| MMR (λ=0.7) | 10 | 0.534 | 0.702 | 0.515 | 3.9% | ≈0 | 0.0028 |
+| **Fair-Top-K** | 5 | **0.565** | **0.697** | **0.554** | 2.8% | ≈0 | 0.0004 |
+| **Fair-Top-K** | 10 | **0.556** | **0.697** | **0.536** | 2.9% | ≈0 | 0.0006 |
 
-> **The fairness–utility trade-off, in one line:** because the baseline is already
-> near parity, there's little to fix — and it shows in the trade-off. **Fair-Top-K
-> is effectively free** (precision unchanged at 0.554 / 0.536, elite share nudged
-> down), while **MMR pays ~2–5 precision points for no measurable fairness gain**.
+> **The fairness–utility trade-off, in one line:** **Fair-Top-K is effectively free** —
+> it nudges the elite share below the corpus base rate (3.3% → 2.9% at k=10) with
+> **zero** loss in NDCG@10 (0.556), MRR (0.697), or precision, because it only demotes
+> the handful of elite papers that crack the top ranks and promotes equally-relevant
+> non-elite papers already in the pool (4/100 rankings change). **MMR pays ~4% of
+> NDCG@10** (0.556 → 0.534) and, being a diversity objective rather than a fairness
+> one, moves the elite share *inconsistently* (down to 2.0% at k=5 but up to 3.9% at
+> k=10) — so it is not a reliable institutional-fairness lever here.
 
 ### 4. Generative faithfulness + demo *(next)*
 
 RQ2 — whether Llama-3-8B-Instruct's cited answers over-rely on consensus/elite
-sources, scored with an **LLM-as-a-judge** setup and RAGAS — plus the Streamlit demo,
-are the remaining pieces.
+sources, scored with a **Pro-Consensus vs. Dissenting** citation-token ratio and an
+**LLM-as-a-judge** setup (plus RAGAS) — and the Streamlit demo are the remaining
+pieces.
 
 ---
 
@@ -140,15 +153,18 @@ arXiv metadata dump ─> inspect ─> dedup + sample (seed=42) ─> sample_50k.j
         enrich (OpenAlex by DOI) ┐                                 │
         enrich (Semantic Scholar) ┴─> rank + finalize ─> final_enriched.jsonl
                                                                    │
-                          demographic enrich (QS join) ────────────┤─> final_enriched_demographics.jsonl
-                          proxy_group: Privileged / Underrepresented│
+   demographic enrich (QS join, 07) ─> institution_ranking_enriched.csv          │
+   proxy labels for full corpus (10) ─> proxy_labels.csv (Privileged/Underrep)    │
                                                                    │
-                          build RAG index (MiniLM / SPECTER2) ──────┘─> FAISS index
+                          build RAG index (MiniLM / SPECTER) ──────┘─> FAISS index + specter_doc_emb.npy
                                     │
-                   ┌────────────────┼─────────────────────┐
-            retrieval audit   cited generation        re-ranking
-            (SPD, Eq. Odds)   (Llama-3 + LLM judge)   (MMR, Fair-Top-K)
-              [done]              [next]                 [done]
+                   ┌────────────────┼──────────────────────────────┐
+            retrieval audit    cited generation              re-ranking
+            SPD, Eq.Odds       (Llama-3 + LLM judge)          MMR, Fair-Top-K
+            NDCG@10, MRR                                      NDCG@10, MRR
+            (08 top_uni;       [next]                         (09 top_uni;
+             11 QS Top-20)                                     11 QS Top-20)
+              [done]                                            [done]
 ```
 
 ---
@@ -167,6 +183,10 @@ A GPU helps a lot — encoding 50K papers takes minutes on GPU vs an hour-plus o
 CPU/MPS. The generation step uses Llama-3-8B-Instruct, a gated Hugging Face model, so
 run `huggingface-cli login` once first.
 
+> The re-ranking + audit-recompute steps (`09`, `10`, `11`, `verify_1_8_integrity`)
+> reuse cached retrieval and embeddings, so they run on **CPU with only `numpy` +
+> `pandas`** — no GPU, FAISS, or model download needed.
+
 ### Get the data
 
 ```bash
@@ -178,17 +198,21 @@ kaggle datasets download -d Cornell-University/arxiv -p data --unzip
 ### Run the pipeline
 
 ```bash
-python scripts/01_inspect.py                    # scan + validate the raw dump
-python scripts/02_sample.py                     # dedup + 50K sample -> sample_50k.jsonl
-python scripts/03_enrich_openalex.py            # affiliations by DOI
-python scripts/04_enrich_s2.py                  # affiliations by arXiv id / title
-python scripts/05_rank_and_finalize.py          # institution ranking -> final_enriched.jsonl
-python scripts/07_demographic_enrich.py \       # prestige proxy -> final_enriched_demographics.jsonl
+python 01_inspect.py                     # scan + validate the raw dump, field coverage
+python 02_dedup_sample.py                # dedup (id/DOI/title) + reproducible 50K sample
+python 04_enrich.py                      # affiliations: OpenAlex (DOI) + Semantic Scholar (id/title)
+python 05_rank_and_finalize.py           # canonical institution keys + ranking -> final_enriched.jsonl
+python 07_demographic_enrich.py \        # QS prestige proxy -> institution_ranking_enriched.csv
   --ranking data/qs_world_university_rankings_2026.csv --source QS-2026 --n 1501 \
-  --elite-mode rank --elite-rank 20 --n-global 28000
-python scripts/06_rag_baseline.py               # embed + FAISS index + retrieval eval
-python scripts/08_specter_fairness_baseline.py  # SPECTER audit: SPD, Equalized Odds
-python scripts/09_rerank.py                     # MMR + Fair-Top-K, fairness-utility trade-off
+  --elite-rank 20
+python 06_rag_baseline.py                # MiniLM encode + FAISS index + retrieval eval
+
+# --- Fairness audit + mitigation (CPU-only from cached artifacts) ---
+python 08_specter_fairness_baseline.py   # SPECTER audit on top_uni: SPD, Equalized Odds, bootstrap CIs
+python 09_rerank_fairness.py             # MMR + Fair-Top-K on top_uni (robustness check)
+python 10_build_proxy_labels.py          # materialize QS Top-20 Privileged labels for all 49,652 docs
+python 11_proxy_fairness_and_rerank.py   # PRIMARY: audit + MMR + Fair-Top-K on QS Top-20, with NDCG@10 + MRR
+python verify_1_8_integrity.py           # integrity checks on the baseline artifacts
 ```
 
 Everything keys off a fixed `seed=42`, and each step writes a self-contained file, so
@@ -204,36 +228,40 @@ sources in one run.
 IR-FairSearch-arXiv-Team6/
   README.md
   requirements.txt
-  scripts/
-    01_inspect.py                  # stream + validate the raw dump, field coverage
-    02_sample.py                   # dedup (id/DOI/title) + reproducible 50K sample
-    03_enrich_openalex.py          # affiliations by DOI (OpenAlex)
-    04_enrich_s2.py                # affiliations by arXiv id / title (Semantic Scholar)
-    05_rank_and_finalize.py        # canonical institution keys + ranking + final_enriched
-    06_rag_baseline.py             # MiniLM encode + FAISS index + retrieval eval
-    07_demographic_enrich.py       # QS join -> Privileged / Underrepresented proxy
-    08_specter_fairness_baseline.py# SPECTER audit: SPD + Equalized Odds (bootstrap CIs)
-    09_rerank.py                   # MMR + Fair-Top-K, fairness-utility trade-off
-    generate.py                    # (next) cited answers (Llama-3) + LLM-as-a-judge
-  data/                            # snapshot + sample + enriched + indexes  (gitignored)
-  results/                         # metric CSVs + bias-score JSON + generation dumps
+  01_inspect.py                    # stream + validate the raw dump, field coverage
+  02_dedup_sample.py               # dedup (id/DOI/title) + reproducible 50K sample
+  04_enrich.py, 04a_*, 04b_*       # affiliation enrichment (OpenAlex + Semantic Scholar)
+  05_rank_and_finalize.py          # canonical institution keys + ranking + final_enriched
+  06_rag_baseline.py               # MiniLM encode + FAISS index + retrieval eval
+  07_demographic_enrich.py         # QS join -> prestige tiers + Privileged/Underrep proxy
+  08_specter_fairness_baseline.py  # SPECTER audit on top_uni: SPD + Equalized Odds (steps 1-8)
+  09_rerank_fairness.py            # MMR + Fair-Top-K on top_uni (steps 9-17)
+  10_build_proxy_labels.py         # QS Top-20 Privileged labels for the full corpus
+  11_proxy_fairness_and_rerank.py  # PRIMARY audit + mitigation on QS Top-20 (+ NDCG@10, MRR)
+  verify_1_8_integrity.py          # 30 integrity checks on the baseline artifacts
+  openalex_client.py, s2_client.py # API clients for enrichment
+  generate.py                      # (next) cited answers (Llama-3) + LLM-as-a-judge
+  data/                            # snapshot + sample + enriched + indexes  (large files gitignored)
 ```
 
-Key result files: `rag_eval.csv` (retrieval quality), `baseline_bias_scores.json`
-(RQ1 audit), `comparison_table.csv` / `rerank_bias_scores.json` (RQ3 mitigation),
-`mmr_lambda_sweep.csv` (λ selection). The demographic layer emits
-`institution_ranking_enriched.csv`, `university_global_ranking_normalized.csv`,
-`final_enriched_demographics.jsonl`, and `demographic_enrichment_summary.txt`.
+Key result files (produced in `data/`): `rag_eval.csv` (retrieval quality);
+`baseline_bias_scores_proxy20.json` + `fairness_per_query_proxy20.csv` (RQ1 audit,
+QS Top-20); `comparison_table.csv` + `rerank_bias_scores.json` (RQ3 mitigation,
+QS Top-20, with NDCG@10/MRR); `mmr_lambda_sweep.csv` (λ selection);
+`proxy_labels.csv` (per-paper Privileged/Underrep). The `*_topuni_citation.*` files
+are the citation-based robustness variants. The demographic layer emits
+`institution_ranking_enriched.csv`, `university_global_ranking_normalized.csv`, and
+`demographic_enrichment_summary.txt`.
 
 ---
 
 ## What's left
 
-- Load the **full** QS ranking so the `proxy_group` labels are complete, not a demo,
-  and re-run the audit sliced by QS Top-20 alongside `top_uni`.
 - Run the **generation** step (RQ2): Llama-3-8B cited answers, Pro-Consensus vs
-  Dissenting citation analysis, LLM-as-a-judge scoring, and RAGAS.
+  Dissenting citation-token analysis, LLM-as-a-judge scoring, and RAGAS.
 - Ship a **Streamlit** demo with a fairness toggle, plus the final report and slides.
+- Optionally load a **full** QS export to populate the finer prestige tiers (not
+  needed for the binary Top-20 audit, but useful for tier-sliced analysis).
 
 ## Data & license
 
