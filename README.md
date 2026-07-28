@@ -226,6 +226,23 @@ python 11_proxy_fairness_and_rerank.py   # PRIMARY: audit + MMR + Fair-Top-K on 
 python verify_1_8_integrity.py           # integrity checks on the baseline artifacts
 ```
 
+### Fairness Scorecard demo (Streamlit)
+
+An interactive per-query fairness diagnostic. Pick one of the 100 audit queries,
+choose **Baseline** / **Fair-Top-K** / **MMR**, and read the scorecard (Privileged
+share, SPD, NDCG@k, Precision@k) with the ranked results tagged by institution
+group. Fair-Top-K's representation target is a live slider — drag it and watch the
+elite share fall while NDCG barely moves.
+
+```bash
+pip install streamlit
+python make_scorecard_data.py     # one-time: build the small display file (needs data/)
+streamlit run app.py              # from the repo root
+```
+
+It runs from small cached files only (`scorecard_docs.csv`,
+`specter_retrieved_topk.csv`, `queries_100.jsonl`) — no GPU, model, or LLM key.
+
 Everything keys off a fixed `seed=42`, and each step writes a self-contained file, so
 the whole thing regenerates end-to-end from the raw snapshot. You can swap the ranking
 source (`--source THE-2026 --n 2191`, `--source ARWU --n 1000`) — just don't mix

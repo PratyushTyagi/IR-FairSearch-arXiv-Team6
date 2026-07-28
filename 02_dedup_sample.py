@@ -21,7 +21,7 @@ ROOT = os.environ.get(
     "FAIRSEARCH_ROOT",
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
-SRC = os.path.join(ROOT, "arxiv-metadata-oai-snapshot.json")
+SRC = os.path.join(ROOT, "data", "arxiv-metadata-oai-snapshot.json")
 OUT_DIR = os.path.join(ROOT, "data")
 os.makedirs(OUT_DIR, exist_ok=True)
 OUT_JSONL = os.path.join(OUT_DIR, "sample_50k.jsonl")

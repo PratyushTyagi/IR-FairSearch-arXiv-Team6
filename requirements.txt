@@ -1,15 +1,13 @@
-chromadb>=0.5
-sentence-transformers>=3.0
-transformers>=4.40
-adapters>=1.0
-torch>=2.2
-rank-bm25>=0.2.2
+pandas>=2.1
+pyarrow>=15
 numpy>=1.26
 requests>=2.31
-
-# For generate.py (Llama-3-8B-Instruct in 4-bit)
-bitsandbytes>=0.43
-accelerate>=0.30
-
-# Optional, only for QUERY_METHOD="llm" in build_queries.py:
-# anthropic>=0.40
+tqdm>=4.66
+rapidfuzz>=3.6
+sentence-transformers>=2.6
+faiss-cpu>=1.7.4
+matplotlib>=3.7          # fairness-utility frontier figure (12_...)
+streamlit>=1.30          # fairness scorecard app (app.py)
+# --- Experiment B (generative faithfulness) — needed once an LLM key is set ---
+# anthropic>=0.40        # cited-answer generation + LLM-as-a-judge (Claude)
+# ragas>=0.1             # RAGAS faithfulness scoring
