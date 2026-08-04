@@ -6,7 +6,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)
 ![FAISS](https://img.shields.io/badge/vector%20index-FAISS-4B8BBE)
 ![SPECTER2 / MiniLM](https://img.shields.io/badge/encoders-SPECTER2%20%2F%20MiniLM-6E56CF)
-![Claude](https://img.shields.io/badge/LLM-Claude%20(Anthropic)-D97757)
+![Gemini](https://img.shields.io/badge/LLM-Gemini%20Flash-4285F4)
 ![corpus: arXiv](https://img.shields.io/badge/corpus-arXiv%20metadata-B31B1B?logo=arxiv&logoColor=white)
 
 ## What this project is about
@@ -41,8 +41,9 @@ University.
 
 ## Where the project is right now
 
-Built bottom-up in four stages. The first three are **done with results**; the
-generation-faithfulness study and the demo are the remaining work.
+Built bottom-up in four stages, **all done with results**: data + enrichment,
+prestige labels, the retrieval bias audit + mitigation (Experiment A / RQ3), and
+the generative-faithfulness study (Experiment B / RQ2) plus the Streamlit demo.
 
 ### 1. Data — cleaned, sampled, enriched *(done)*
 
@@ -147,19 +148,22 @@ operating range, and strictly better than the diversity baseline.
 
 ![Fairness–utility frontier](fairness_utility_pareto.png)
 
-### 4. Generative faithfulness + demo *(next)*
+### 4. Generative faithfulness — Experiment B *(done)*
 
-**LLM integration: Claude (Anthropic API).** We use Claude as both generator and
-judge. The pipeline already calls Claude for LLM-based query generation
-(`build_queries.py`, `claude-sonnet-4`); Experiment B extends this — Claude
-(`claude-sonnet-5`) writes a cited answer from the retrieved abstracts, and a Claude
-judge scores faithfulness (`claude-haiku-4-5` handles the cheap stance
-classification).
+**LLM integration: Gemini (Google AI Studio, `gemini-flash-latest`, free tier).**
+Experiment B (`13_experiment_b.py`) tests **RQ2** — whether the RAG *generator*
+over-relies on consensus / elite sources when the retrieved evidence is
+contradictory. For each **debated question** we retrieve top-k papers (BM25,
+CPU-only), have Gemini write a **cited** answer using only those abstracts,
+classify each source's stance (**pro-consensus / dissenting / neutral**) with
+Gemini, and measure the **Pro-Consensus vs. Dissenting citation ratio** and a
+**RAGAS-style faithfulness** score (LLM-as-a-judge: fraction of answer claims
+grounded in the retrieved context). Per-query + aggregate results are written to
+`experiment_b_results.json`.
 
-RQ2 — whether Claude's cited answers over-rely on consensus/elite sources, scored
-with a **Pro-Consensus vs. Dissenting** citation-token ratio and an
-**LLM-as-a-judge** setup (plus RAGAS) — and the Streamlit demo are the remaining
-pieces. Set `ANTHROPIC_API_KEY` in your environment to run this step.
+Set `GEMINI_API_KEY` (free key from Google AI Studio) to run it:
+`python 13_experiment_b.py --n-queries 12 --k 8`. The Streamlit scorecard demo
+(below) is also complete.
 
 ---
 
@@ -178,7 +182,7 @@ arXiv metadata dump ─> inspect ─> dedup + sample (seed=42) ─> sample_50k.j
                                     │
                    ┌────────────────┼──────────────────────────────┐
             retrieval audit    cited generation              re-ranking
-            SPD, Eq.Odds       (Claude + LLM judge)           MMR, Fair-Top-K
+            SPD, Eq.Odds       (Gemini + LLM judge)           MMR, Fair-Top-K
             NDCG@10, MRR                                      NDCG@10, MRR
             (08 top_uni;       [next]                         (09 top_uni;
              11 QS Top-20)                                     11 QS Top-20)
@@ -198,8 +202,9 @@ pip install -r requirements.txt
 ```
 
 A GPU helps a lot — encoding 50K papers takes minutes on GPU vs an hour-plus on
-CPU/MPS. The generation step (Experiment B) uses **Claude via the Anthropic API**, so
-set `ANTHROPIC_API_KEY` in your environment first (no GPU needed for that step).
+CPU/MPS. The generation step (Experiment B) uses **Gemini via the Google AI Studio
+API** (`gemini-flash-latest`), so set `GEMINI_API_KEY` in your environment first
+(free tier; no GPU needed for that step).
 
 > The re-ranking + audit-recompute steps (`09`, `10`, `11`, `verify_1_8_integrity`)
 > reuse cached retrieval and embeddings, so they run on **CPU with only `numpy` +
@@ -275,7 +280,7 @@ IR-FairSearch-arXiv-Team6/
   11_proxy_fairness_and_rerank.py  # PRIMARY audit + mitigation on QS Top-20 (+ NDCG@10, MRR)
   verify_1_8_integrity.py          # 30 integrity checks on the baseline artifacts
   openalex_client.py, s2_client.py # API clients for enrichment
-  generate.py                      # (next) cited answers (Claude, Anthropic API) + LLM-as-a-judge
+  13_experiment_b.py               # Experiment B: Gemini cited answers + consensus/dissent + faithfulness
   data/                            # snapshot + sample + enriched + indexes  (large files gitignored)
 ```
 
@@ -283,20 +288,26 @@ Key result files (produced in `data/`): `rag_eval.csv` (retrieval quality);
 `baseline_bias_scores_proxy20.json` + `fairness_per_query_proxy20.csv` (RQ1 audit,
 QS Top-20); `comparison_table.csv` + `rerank_bias_scores.json` (RQ3 mitigation,
 QS Top-20, with NDCG@10/MRR); `mmr_lambda_sweep.csv` (λ selection);
-`proxy_labels.csv` (per-paper Privileged/Underrep). The `*_topuni_citation.*` files
-are the citation-based robustness variants. The demographic layer emits
-`institution_ranking_enriched.csv`, `university_global_ranking_normalized.csv`, and
-`demographic_enrichment_summary.txt`.
+`proxy_labels.csv` (per-paper Privileged/Underrep); `experiment_b_results.json`
+(RQ2 generative-faithfulness: consensus/dissent + faithfulness) and
+`fairness_utility_pareto.{csv,png}` (RQ3 tradeoff frontier). The
+`*_topuni_citation.*` files are the citation-based robustness variants. The
+demographic layer emits `institution_ranking_enriched.csv`,
+`university_global_ranking_normalized.csv`, and `demographic_enrichment_summary.txt`.
+The Streamlit app is `app.py` (+ `scorecard.py`, `make_scorecard_data.py`).
 
 ---
 
-## What's left
+## Future directions
 
-- Run the **generation** step (RQ2) with **Claude (Anthropic API)**: cited answers,
-  Pro-Consensus vs. Dissenting citation-token analysis, LLM-as-a-judge scoring, and RAGAS.
-- Ship a **Streamlit** demo with a fairness toggle, plus the final report and slides.
-- Optionally load a **full** QS export to populate the finer prestige tiers (not
-  needed for the binary Top-20 audit, but useful for tier-sliced analysis).
+- **Prompt-engineering mitigation**: perspective-balancing prompts as a second
+  RQ3 lever alongside re-ranking; measure the effect on Experiment B's
+  consensus/dissent ratio and faithfulness.
+- **Exposure-based fairness** (rank-weighted, à la Singh & Joachims) and a
+  field-sliced audit to localize where bias concentrates.
+- Load a **full** QS export to populate finer prestige tiers (not needed for the
+  binary Top-20 audit, but useful for tier-sliced analysis), and scale Experiment
+  B to a larger contradictory-query set with SPECTER (not BM25) retrieval.
 
 ## Data & license
 

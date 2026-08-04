@@ -1,0 +1,19 @@
+{
+  "queries": [
+    "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
+    "Is batch normalization essential for training deep neural networks, or can networks train well without it?",
+    "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
+    "Are transformer architectures strictly better than convolutional networks for image recognition?",
+    "Do adaptive optimizers such as Adam generalize better than plain SGD, or does SGD generalize better?",
+    "Is dropout still useful in modern deep learning, or has it been made obsolete by other regularizers?",
+    "Does more pretraining data always improve downstream task performance, or are there diminishing or negative returns?",
+    "Is attention necessary for strong sequence models, or can MLP- or convolution-only models match transformers?",
+    "Does the lottery-ticket hypothesis hold for large-scale networks, or does it break down at scale?",
+    "Are deeper networks better than wider networks for generalization, all else equal?",
+    "Has quantum computational advantage been convincingly demonstrated, or can classical algorithms still simulate the circuits?",
+    "Does self-supervised pretraining outperform supervised pretraining for transfer learning?"
+  ],
+  "model": "gemini-flash-latest",
+  "retriever": "BM25",
+  "k": 8
+}

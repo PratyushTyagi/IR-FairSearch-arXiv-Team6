@@ -8,6 +8,7 @@ sentence-transformers>=2.6
 faiss-cpu>=1.7.4
 matplotlib>=3.7          # fairness-utility frontier figure (12_...)
 streamlit>=1.30          # fairness scorecard app (app.py)
-# --- Experiment B (generative faithfulness) — needed once an LLM key is set ---
-# anthropic>=0.40        # cited-answer generation + LLM-as-a-judge (Claude)
-# ragas>=0.1             # RAGAS faithfulness scoring
+rank-bm25>=0.2.2         # Experiment B contradictory-query retrieval (13_...)
+# Experiment B (generative faithfulness) uses Gemini via the Google AI Studio
+# REST API (gemini-flash-latest, free tier) — set GEMINI_API_KEY. No SDK needed
+# (plain requests); optionally: ragas>=0.1 for RAGAS-backed faithfulness.
