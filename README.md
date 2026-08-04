@@ -6,7 +6,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)
 ![FAISS](https://img.shields.io/badge/vector%20index-FAISS-4B8BBE)
 ![SPECTER2 / MiniLM](https://img.shields.io/badge/encoders-SPECTER2%20%2F%20MiniLM-6E56CF)
-![Llama-3-8B](https://img.shields.io/badge/LLM-Llama--3--8B--Instruct-4B32C3)
+![Claude](https://img.shields.io/badge/LLM-Claude%20(Anthropic)-D97757)
 ![corpus: arXiv](https://img.shields.io/badge/corpus-arXiv%20metadata-B31B1B?logo=arxiv&logoColor=white)
 
 ## What this project is about
@@ -149,10 +149,17 @@ operating range, and strictly better than the diversity baseline.
 
 ### 4. Generative faithfulness + demo *(next)*
 
-RQ2 — whether Llama-3-8B-Instruct's cited answers over-rely on consensus/elite
-sources, scored with a **Pro-Consensus vs. Dissenting** citation-token ratio and an
+**LLM integration: Claude (Anthropic API).** We use Claude as both generator and
+judge. The pipeline already calls Claude for LLM-based query generation
+(`build_queries.py`, `claude-sonnet-4`); Experiment B extends this — Claude
+(`claude-sonnet-5`) writes a cited answer from the retrieved abstracts, and a Claude
+judge scores faithfulness (`claude-haiku-4-5` handles the cheap stance
+classification).
+
+RQ2 — whether Claude's cited answers over-rely on consensus/elite sources, scored
+with a **Pro-Consensus vs. Dissenting** citation-token ratio and an
 **LLM-as-a-judge** setup (plus RAGAS) — and the Streamlit demo are the remaining
-pieces.
+pieces. Set `ANTHROPIC_API_KEY` in your environment to run this step.
 
 ---
 
@@ -171,7 +178,7 @@ arXiv metadata dump ─> inspect ─> dedup + sample (seed=42) ─> sample_50k.j
                                     │
                    ┌────────────────┼──────────────────────────────┐
             retrieval audit    cited generation              re-ranking
-            SPD, Eq.Odds       (Llama-3 + LLM judge)          MMR, Fair-Top-K
+            SPD, Eq.Odds       (Claude + LLM judge)           MMR, Fair-Top-K
             NDCG@10, MRR                                      NDCG@10, MRR
             (08 top_uni;       [next]                         (09 top_uni;
              11 QS Top-20)                                     11 QS Top-20)
@@ -191,8 +198,8 @@ pip install -r requirements.txt
 ```
 
 A GPU helps a lot — encoding 50K papers takes minutes on GPU vs an hour-plus on
-CPU/MPS. The generation step uses Llama-3-8B-Instruct, a gated Hugging Face model, so
-run `huggingface-cli login` once first.
+CPU/MPS. The generation step (Experiment B) uses **Claude via the Anthropic API**, so
+set `ANTHROPIC_API_KEY` in your environment first (no GPU needed for that step).
 
 > The re-ranking + audit-recompute steps (`09`, `10`, `11`, `verify_1_8_integrity`)
 > reuse cached retrieval and embeddings, so they run on **CPU with only `numpy` +
@@ -268,7 +275,7 @@ IR-FairSearch-arXiv-Team6/
   11_proxy_fairness_and_rerank.py  # PRIMARY audit + mitigation on QS Top-20 (+ NDCG@10, MRR)
   verify_1_8_integrity.py          # 30 integrity checks on the baseline artifacts
   openalex_client.py, s2_client.py # API clients for enrichment
-  generate.py                      # (next) cited answers (Llama-3) + LLM-as-a-judge
+  generate.py                      # (next) cited answers (Claude, Anthropic API) + LLM-as-a-judge
   data/                            # snapshot + sample + enriched + indexes  (large files gitignored)
 ```
 
@@ -285,8 +292,8 @@ are the citation-based robustness variants. The demographic layer emits
 
 ## What's left
 
-- Run the **generation** step (RQ2): Llama-3-8B cited answers, Pro-Consensus vs
-  Dissenting citation-token analysis, LLM-as-a-judge scoring, and RAGAS.
+- Run the **generation** step (RQ2) with **Claude (Anthropic API)**: cited answers,
+  Pro-Consensus vs. Dissenting citation-token analysis, LLM-as-a-judge scoring, and RAGAS.
 - Ship a **Streamlit** demo with a fairness toggle, plus the final report and slides.
 - Optionally load a **full** QS export to populate the finer prestige tiers (not
   needed for the binary Top-20 audit, but useful for tier-sliced analysis).
