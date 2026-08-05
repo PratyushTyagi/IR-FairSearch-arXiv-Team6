@@ -1,92 +1,20 @@
 {
   "config": {
     "n_queries": 12,
-    "k": 8,
+    "k": 6,
     "model": "gemini-flash-latest",
     "retriever": "BM25",
-    "pro_consensus_vs_dissenting_citation_ratio": 0.857,
-    "cited_pro_consensus": 6,
-    "cited_dissenting": 7,
-    "share_citations_pro_consensus": 0.462,
-    "retrieved_pro_consensus": 6,
-    "retrieved_dissenting": 7,
+    "pro_consensus_vs_dissenting_citation_ratio": 1.25,
+    "cited_pro_consensus": 10,
+    "cited_dissenting": 8,
+    "share_citations_pro_consensus": 0.556,
+    "retrieved_pro_consensus": 10,
+    "retrieved_dissenting": 8,
     "mean_faithfulness": 1.0,
-    "privileged_share_retrieved": 0.031,
+    "privileged_share_retrieved": 0.014,
     "privileged_share_cited": 0.0
   },
   "per_query": [
-    {
-      "query": "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
-      "n_retrieved": 8,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 1,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "2005.04345",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1902.04742",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Google"
-        },
-        {
-          "id": "1910.11971",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1905.11675",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2404.14875",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "IMT School for Advanced Studies Lucca"
-        },
-        {
-          "id": "2210.07663",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Arizona State University"
-        },
-        {
-          "id": "2203.04466",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2202.10788",
-          "group": "Privileged",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Massachusetts Institute of Technology"
-        }
-      ]
-    },
     {
       "query": "Is batch normalization essential for training deep neural networks, or can networks train well without it?",
       "n_retrieved": 8,
@@ -155,78 +83,6 @@
           "group": "Underrepresented",
           "stance": "dissenting",
           "cited": true,
-          "institution": ""
-        }
-      ]
-    },
-    {
-      "query": "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
-      "n_retrieved": 8,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 0,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "astro-ph/0206126",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Laboratoire d\u2019Etudes du Rayonnement et de la Mati\u00e8re en Astrophysique et Atmosph\u00e8res"
-        },
-        {
-          "id": "0709.3376",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "astro-ph/0702275",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Universit\u00e9 Libre de Bruxelles"
-        },
-        {
-          "id": "1009.1369",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "0903.4588",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1404.0531",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Groningen"
-        },
-        {
-          "id": "1404.4008",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Helsinki"
-        },
-        {
-          "id": "0902.0072",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
           "institution": ""
         }
       ]
@@ -304,150 +160,6 @@
       ]
     },
     {
-      "query": "Do adaptive optimizers such as Adam generalize better than plain SGD, or does SGD generalize better?",
-      "n_retrieved": 8,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 0,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "2502.02727",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2507.01129",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2602.04669",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2002.01113",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1905.01422",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1702.00317",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2605.31371",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1905.11675",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        }
-      ]
-    },
-    {
-      "query": "Is dropout still useful in modern deep learning, or has it been made obsolete by other regularizers?",
-      "n_retrieved": 8,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 0,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "1604.02646",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1904.03392",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1602.02220",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2105.03390",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1511.06381",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2605.16570",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2401.03198",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Brawijaya"
-        },
-        {
-          "id": "0808.3616",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        }
-      ]
-    },
-    {
       "query": "Does more pretraining data always improve downstream task performance, or are there diminishing or negative returns?",
       "n_retrieved": 8,
       "retrieved_pro_consensus": 5,
@@ -520,8 +232,240 @@
       ]
     },
     {
+      "query": "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2005.04345",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1902.04742",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Google"
+        },
+        {
+          "id": "1910.11971",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1905.11675",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2404.14875",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "IMT School for Advanced Studies Lucca"
+        },
+        {
+          "id": "2210.07663",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Arizona State University"
+        }
+      ]
+    },
+    {
+      "query": "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "astro-ph/0206126",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Laboratoire d\u2019Etudes du Rayonnement et de la Mati\u00e8re en Astrophysique et Atmosph\u00e8res"
+        },
+        {
+          "id": "0709.3376",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "astro-ph/0702275",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Universit\u00e9 Libre de Bruxelles"
+        },
+        {
+          "id": "1009.1369",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "0903.4588",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1404.0531",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Groningen"
+        }
+      ]
+    },
+    {
+      "query": "Do adaptive optimizers such as Adam generalize better than plain SGD, or does SGD generalize better?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 8,
+      "n_supported": 8,
+      "answer": "The provided sources do not establish an absolute consensus on whether adaptive optimizers or SGD generalize better overall, but they highlight distinct trade-offs between convergence speed and generalization [1], [5]. Source [5] notes that adaptive methods like Adam typically excel in convergence speed, whereas SGD is traditionally associated with strong generalization performance. To address this trade-off, adaptive remote stochastic gradient (ARSG) methods demonstrate both faster convergence than Adam and superior generalization compared to SGD when training ResNet-50 on ImageNet [5]. Meanwhile, adaptive optimizers like Adam are widely adopted in federated learning for improved convergence rates, though naive drift correction can degrade performance compared to SGD-based approaches [1]. Other studies observe that SGD and its variants suffer from generic stalling issues in practice [6], whereas specialized manifold variants like Cayley SGD and Cayley Adam achieve faster convergence without sacrificing CNN performance [4]. Thus, generalization performance depends heavily on the specific optimization framework and modifications applied.",
+      "docs": [
+        {
+          "id": "2502.02727",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2507.01129",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2602.04669",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2002.01113",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1905.01422",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1702.00317",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Is dropout still useful in modern deep learning, or has it been made obsolete by other regularizers?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 4,
+      "retrieved_dissenting": 1,
+      "cited_pro_consensus": 4,
+      "cited_dissenting": 1,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 7,
+      "n_supported": 7,
+      "answer": "Whether dropout remains useful in modern deep learning is subject to ongoing debate and modification. Some research suggests standard dropout may be suboptimal or outperformed by alternative regularizers, such as visualization regularizers [1]. Furthermore, standard dropout can suffer from suboptimal convergence due to independent neuron sampling [3] or conflict with Batch Normalization in convolutional neural networks [2]. However, dropout has not been rendered obsolete; rather, it continues to be useful through adaptations and specialized applications. Proposed variants like Drop-Conv2d and evolutional or multinomial dropout address traditional limitations to provide efficient regularization and improved convergence in deep networks [2, 3]. Additionally, combining dropout with novel objectives, such as manifold regularized networks, yields competitive classification performance on benchmark datasets [5]. Beyond standard regularization, Monte Carlo dropout remains a popular method for uncertainty quantification in spatial deep learning [6]. Thus, while standard dropout faces limitations, modified dropout techniques maintain strong utility.",
+      "docs": [
+        {
+          "id": "1604.02646",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1904.03392",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1602.02220",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2105.03390",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1511.06381",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2605.16570",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        }
+      ]
+    },
+    {
       "query": "Is attention necessary for strong sequence models, or can MLP- or convolution-only models match transformers?",
-      "n_retrieved": 8,
+      "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
       "retrieved_dissenting": 0,
       "cited_pro_consensus": 0,
@@ -574,26 +518,12 @@
           "stance": "neutral",
           "cited": false,
           "institution": ""
-        },
-        {
-          "id": "2210.01820",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2411.01738",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
         }
       ]
     },
     {
       "query": "Does the lottery-ticket hypothesis hold for large-scale networks, or does it break down at scale?",
-      "n_retrieved": 8,
+      "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
       "retrieved_dissenting": 0,
       "cited_pro_consensus": 0,
@@ -646,26 +576,12 @@
           "stance": "neutral",
           "cited": false,
           "institution": "\u00c9cole Polytechnique F\u00e9d\u00e9rale de Lausanne"
-        },
-        {
-          "id": "2003.04618",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2203.03151",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
         }
       ]
     },
     {
       "query": "Are deeper networks better than wider networks for generalization, all else equal?",
-      "n_retrieved": 8,
+      "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
       "retrieved_dissenting": 0,
       "cited_pro_consensus": 0,
@@ -718,31 +634,17 @@
           "stance": "neutral",
           "cited": false,
           "institution": "University of Minnesota System"
-        },
-        {
-          "id": "1701.02991",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Kuwait University"
-        },
-        {
-          "id": "2302.12239",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Southern Denmark"
         }
       ]
     },
     {
       "query": "Has quantum computational advantage been convincingly demonstrated, or can classical algorithms still simulate the circuits?",
-      "n_retrieved": 8,
+      "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
       "retrieved_dissenting": 0,
       "cited_pro_consensus": 0,
       "cited_dissenting": 0,
-      "privileged_retrieved": 1,
+      "privileged_retrieved": 0,
       "privileged_cited": 0,
       "faithfulness": null,
       "n_claims": null,
@@ -790,26 +692,12 @@
           "stance": "neutral",
           "cited": false,
           "institution": ""
-        },
-        {
-          "id": "2510.18977",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Universidad de Granada"
-        },
-        {
-          "id": "1209.6010",
-          "group": "Privileged",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Oxford"
         }
       ]
     },
     {
       "query": "Does self-supervised pretraining outperform supervised pretraining for transfer learning?",
-      "n_retrieved": 8,
+      "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
       "retrieved_dissenting": 0,
       "cited_pro_consensus": 0,
@@ -858,20 +746,6 @@
         },
         {
           "id": "2002.02848",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2602.18066",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2207.07611",
           "group": "Underrepresented",
           "stance": "neutral",
           "cited": false,
