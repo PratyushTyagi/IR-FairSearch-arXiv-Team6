@@ -59,7 +59,8 @@ CONTRADICTORY_QUERIES = [
 
 # --------------------------------------------------------------------------- #
 _last_call = [0.0]
-MIN_INTERVAL = 5.0        # free-tier friendly spacing between calls (~12/min)
+MIN_INTERVAL = 12.0       # wide spacing to stay under the free-tier per-minute
+                          # limit (~5 calls/min); override with --min-interval
 
 
 def _retry_delay(resp):
@@ -254,12 +255,18 @@ def combined_analyze(query, docs):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-queries", type=int, default=len(CONTRADICTORY_QUERIES))
-    ap.add_argument("--k", type=int, default=8)
+    ap.add_argument("--k", type=int, default=6)
+    ap.add_argument("--min-interval", type=float, default=None,
+                    help="seconds between Gemini calls (default 12; raise if the "
+                         "per-minute free-tier limit blanks later queries)")
     ap.add_argument("--combined", action="store_true", default=True,
                     help="one Gemini call/query (free-tier friendly; default)")
     ap.add_argument("--separate", dest="combined", action="store_false",
                     help="three calls/query (higher quality; needs more quota)")
     args = ap.parse_args()
+    if args.min_interval:
+        global MIN_INTERVAL
+        MIN_INTERVAL = args.min_interval
 
     queries = CONTRADICTORY_QUERIES[:args.n_queries]
     with open(os.path.join(DATA, "contradictory_queries.json"), "w") as f:
@@ -273,7 +280,9 @@ def main():
     if os.path.exists(results_path):
         try:
             prev = json.load(open(results_path)).get("per_query", [])
-            per_query = [r for r in prev if r["query"] in set(queries)]
+            qset = set(queries)
+            # keep only queries that returned a real answer; empties get retried
+            per_query = [r for r in prev if r["query"] in qset and r.get("answer")]
             done = {r["query"] for r in per_query}
             if done:
                 print(f"Resuming: {len(done)}/{len(queries)} queries already done")
