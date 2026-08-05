@@ -1,0 +1,883 @@
+{
+  "config": {
+    "n_queries": 12,
+    "k": 8,
+    "model": "gemini-flash-latest",
+    "retriever": "BM25",
+    "pro_consensus_vs_dissenting_citation_ratio": 0.857,
+    "cited_pro_consensus": 6,
+    "cited_dissenting": 7,
+    "share_citations_pro_consensus": 0.462,
+    "retrieved_pro_consensus": 6,
+    "retrieved_dissenting": 7,
+    "mean_faithfulness": 1.0,
+    "privileged_share_retrieved": 0.031,
+    "privileged_share_cited": 0.0
+  },
+  "per_query": [
+    {
+      "query": "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 1,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2005.04345",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1902.04742",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Google"
+        },
+        {
+          "id": "1910.11971",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1905.11675",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2404.14875",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "IMT School for Advanced Studies Lucca"
+        },
+        {
+          "id": "2210.07663",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Arizona State University"
+        },
+        {
+          "id": "2203.04466",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2202.10788",
+          "group": "Privileged",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Massachusetts Institute of Technology"
+        }
+      ]
+    },
+    {
+      "query": "Is batch normalization essential for training deep neural networks, or can networks train well without it?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 1,
+      "retrieved_dissenting": 5,
+      "cited_pro_consensus": 1,
+      "cited_dissenting": 5,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 7,
+      "n_supported": 7,
+      "answer": "While Batch Normalization (BN) is described as essential for effectively training state-of-the-art deep convolutional neural networks [1], literature demonstrates that deep networks can train effectively without it. Alternative normalization methods, such as Group Normalization and Layer Normalization, consistently outperform BN in non-IID federated learning settings [2]. For small batch sizes, Equi-normalization provides an effective alternative to BN on tasks like CIFAR-10 and ImageNet [5]. Furthermore, BN can conflict with standard dropout operations [6] and negatively impact adversarial robustness during adversarial training unless separate BN operations are used for clean and adversarial images [7]. Most notably, recent work shows that deep ResNets can achieve performance competitive with state-of-the-art models like EfficientNets without any activation normalization layers by using adapted Weight Standardization to manage signal propagation [8]. Thus, while widely used, BN is not strictly essential, and networks can achieve high performance using non-BN techniques or unnormalized architectures [2], [5], [6], [7], [8].",
+      "docs": [
+        {
+          "id": "1806.02892",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2303.10630",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": "University of Turin"
+        },
+        {
+          "id": "1511.06381",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1905.11675",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1902.10416",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1904.03392",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1906.03787",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2101.08692",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "astro-ph/0206126",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Laboratoire d\u2019Etudes du Rayonnement et de la Mati\u00e8re en Astrophysique et Atmosph\u00e8res"
+        },
+        {
+          "id": "0709.3376",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "astro-ph/0702275",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Universit\u00e9 Libre de Bruxelles"
+        },
+        {
+          "id": "1009.1369",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "0903.4588",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1404.0531",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Groningen"
+        },
+        {
+          "id": "1404.4008",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Helsinki"
+        },
+        {
+          "id": "0902.0072",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Are transformer architectures strictly better than convolutional networks for image recognition?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 2,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 2,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 8,
+      "n_supported": 8,
+      "answer": "The evidence indicates that transformer architectures are not strictly better than convolutional neural networks (CNNs) for image and video recognition; rather, both have complementary strengths. According to [1], 3D CNNs excel at capturing spatial features and local temporal dependencies, whereas video transformers (VIT) excel at capturing long-range dependencies across frames, making hybrid combinations effective. Furthermore, [5] notes that Vision Transformers (ViT) face computational overhead and constraints in capturing long-range dependencies, prompting architectures to combine CNNs' local feature extraction strengths with long-range sequence models. CNNs also remain highly effective when adapted for specific recognition challenges. For instance, specialized CNN architectures outperform alternative approaches in depiction-invariant object recognition [3] and open-set visual recognition [6]. Additionally, CNNs achieve performance comparable to recurrent models in signal classification tasks [8]. Therefore, transformers do not strictly supersede CNNs, as CNNs provide distinct advantages in local feature extraction and specialized recognition tasks [1], [3], [5], [6].",
+      "docs": [
+        {
+          "id": "2404.06243",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1409.4127",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1607.08764",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1908.10266",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2407.01530",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1903.03161",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1705.08764",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1907.07321",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Do adaptive optimizers such as Adam generalize better than plain SGD, or does SGD generalize better?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2502.02727",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2507.01129",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2602.04669",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2002.01113",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1905.01422",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1702.00317",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2605.31371",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1905.11675",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Is dropout still useful in modern deep learning, or has it been made obsolete by other regularizers?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "1604.02646",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1904.03392",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1602.02220",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2105.03390",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1511.06381",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2605.16570",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2401.03198",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Brawijaya"
+        },
+        {
+          "id": "0808.3616",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Does more pretraining data always improve downstream task performance, or are there diminishing or negative returns?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 5,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 5,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 7,
+      "n_supported": 7,
+      "answer": "More pretraining data does not always improve downstream task performance; evidence indicates both diminishing and negative returns. Indiscriminately adding pretraining data can degrade downstream performance when the additional data is poorly aligned with the target task [1]. Likewise, certain pretraining setups do not help or can even hinder performance [3]. Dataset pruning demonstrates that redundant training samples can be safely removed from pretraining datasets without sacrificing finetuning accuracy, proving that unselective data scaling yields diminishing returns [4]. Furthermore, misaligned gradients between pretraining tasks can induce severe negative transfer [6]. In related iterative training settings, successive self-improvement steps also hit points of diminishing returns [7]. Overall, data quality, task alignment, and selectivity are often far more critical than sheer dataset size, enabling smaller, highly aligned, or pruned datasets to match or exceed the performance of massive, unselective datasets [1], [4].",
+      "docs": [
+        {
+          "id": "2502.11085",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2205.07477",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2407.20495",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2310.08782",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2108.05542",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "NIT Trichy"
+        },
+        {
+          "id": "2110.02600",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": "KAIST"
+        },
+        {
+          "id": "2501.05707",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2311.12786",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Is attention necessary for strong sequence models, or can MLP- or convolution-only models match transformers?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 1,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2211.07157",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2403.19888",
+          "group": "Privileged",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Cornell University"
+        },
+        {
+          "id": "2602.02686",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2411.01818",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2202.01336",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2205.13515",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2210.01820",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2411.01738",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Does the lottery-ticket hypothesis hold for large-scale networks, or does it break down at scale?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "1807.03652",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2309.13302",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2207.01088",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1910.10862",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2602.10428",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2309.10688",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "\u00c9cole Polytechnique F\u00e9d\u00e9rale de Lausanne"
+        },
+        {
+          "id": "2003.04618",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2203.03151",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    },
+    {
+      "query": "Are deeper networks better than wider networks for generalization, all else equal?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "1711.00215",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2503.11462",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2212.03942",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1805.07091",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2311.06518",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Tel Aviv University"
+        },
+        {
+          "id": "1211.4289",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Minnesota System"
+        },
+        {
+          "id": "1701.02991",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Kuwait University"
+        },
+        {
+          "id": "2302.12239",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Southern Denmark"
+        }
+      ]
+    },
+    {
+      "query": "Has quantum computational advantage been convincingly demonstrated, or can classical algorithms still simulate the circuits?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 1,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2003.04211",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Iowa State University"
+        },
+        {
+          "id": "2207.02961",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2205.06278",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "1304.2667",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Institute of Photonic Sciences"
+        },
+        {
+          "id": "2511.09951",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2204.02370",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2510.18977",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Universidad de Granada"
+        },
+        {
+          "id": "1209.6010",
+          "group": "Privileged",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "University of Oxford"
+        }
+      ]
+    },
+    {
+      "query": "Does self-supervised pretraining outperform supervised pretraining for transfer learning?",
+      "n_retrieved": 8,
+      "retrieved_pro_consensus": 0,
+      "retrieved_dissenting": 0,
+      "cited_pro_consensus": 0,
+      "cited_dissenting": 0,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": null,
+      "n_claims": null,
+      "n_supported": null,
+      "answer": "",
+      "docs": [
+        {
+          "id": "2111.08137",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "Google"
+        },
+        {
+          "id": "2310.08782",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2408.07869",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2506.09022",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2108.05542",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": "NIT Trichy"
+        },
+        {
+          "id": "2002.02848",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2602.18066",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        },
+        {
+          "id": "2207.07611",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": false,
+          "institution": ""
+        }
+      ]
+    }
+  ]
+}
