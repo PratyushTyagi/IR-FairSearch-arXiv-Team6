@@ -4,15 +4,15 @@
     "k": 6,
     "model": "gemini-flash-latest",
     "retriever": "BM25",
-    "pro_consensus_vs_dissenting_citation_ratio": 1.25,
-    "cited_pro_consensus": 10,
-    "cited_dissenting": 8,
-    "share_citations_pro_consensus": 0.556,
-    "retrieved_pro_consensus": 10,
-    "retrieved_dissenting": 8,
+    "pro_consensus_vs_dissenting_citation_ratio": 1.125,
+    "cited_pro_consensus": 18,
+    "cited_dissenting": 16,
+    "share_citations_pro_consensus": 0.529,
+    "retrieved_pro_consensus": 18,
+    "retrieved_dissenting": 16,
     "mean_faithfulness": 1.0,
     "privileged_share_retrieved": 0.014,
-    "privileged_share_cited": 0.0
+    "privileged_share_cited": 0.029
   },
   "per_query": [
     {
@@ -232,122 +232,6 @@
       ]
     },
     {
-      "query": "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
-      "n_retrieved": 6,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 0,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "2005.04345",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1902.04742",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Google"
-        },
-        {
-          "id": "1910.11971",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1905.11675",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "2404.14875",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "IMT School for Advanced Studies Lucca"
-        },
-        {
-          "id": "2210.07663",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Arizona State University"
-        }
-      ]
-    },
-    {
-      "query": "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
-      "n_retrieved": 6,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 0,
-      "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
-      "docs": [
-        {
-          "id": "astro-ph/0206126",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Laboratoire d\u2019Etudes du Rayonnement et de la Mati\u00e8re en Astrophysique et Atmosph\u00e8res"
-        },
-        {
-          "id": "0709.3376",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "astro-ph/0702275",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "Universit\u00e9 Libre de Bruxelles"
-        },
-        {
-          "id": "1009.1369",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "0903.4588",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": ""
-        },
-        {
-          "id": "1404.0531",
-          "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
-          "institution": "University of Groningen"
-        }
-      ]
-    },
-    {
       "query": "Do adaptive optimizers such as Adam generalize better than plain SGD, or does SGD generalize better?",
       "n_retrieved": 6,
       "retrieved_pro_consensus": 0,
@@ -464,59 +348,175 @@
       ]
     },
     {
-      "query": "Is attention necessary for strong sequence models, or can MLP- or convolution-only models match transformers?",
+      "query": "Do larger, overparameterized neural networks always generalize better, or does overparameterization hurt generalization?",
       "n_retrieved": 6,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
-      "privileged_retrieved": 1,
+      "retrieved_pro_consensus": 1,
+      "retrieved_dissenting": 2,
+      "cited_pro_consensus": 1,
+      "cited_dissenting": 2,
+      "privileged_retrieved": 0,
       "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
+      "faithfulness": 1.0,
+      "n_claims": 5,
+      "n_supported": 5,
+      "answer": "Modern deep neural networks rely on overparameterization to achieve state-of-the-art generalization performance [3]. However, overparameterization does not strictly guarantee better generalization and can hurt performance under specific conditions. For instance, increasing model size well beyond zero training error can exacerbate spurious correlations in data, thereby increasing test error on minority groups even if average test error improves [1]. Additionally, pretrained transformer models do not always improve robustness when exposed to noisy data compared to traditional models [6]. On a theoretical level, traditional learning-theoretic bounds based on uniform convergence fail to explain the strong generalization of overparameterized networks, as these bounds can grow vacuous or increase alongside training dataset size [2]. Furthermore, because overparameterized models are computationally expensive, pruning methods are used to mitigate parameter overhead while attempting to preserve generalization gains [3]. Overall, while overparameterization often drives state-of-the-art results [3], it can hurt generalization on minority groups [1] and noisy distributions [6].",
       "docs": [
         {
-          "id": "2211.07157",
+          "id": "2005.04345",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1902.04742",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": "Google"
+        },
+        {
+          "id": "1910.11971",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1905.11675",
           "group": "Underrepresented",
           "stance": "neutral",
           "cited": false,
           "institution": ""
         },
         {
-          "id": "2403.19888",
-          "group": "Privileged",
+          "id": "2404.14875",
+          "group": "Underrepresented",
           "stance": "neutral",
           "cited": false,
+          "institution": "IMT School for Advanced Studies Lucca"
+        },
+        {
+          "id": "2210.07663",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": "Arizona State University"
+        }
+      ]
+    },
+    {
+      "query": "Does dark matter exist, or do modified-gravity (MOND) theories better explain galaxy rotation curves?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 1,
+      "retrieved_dissenting": 4,
+      "cited_pro_consensus": 1,
+      "cited_dissenting": 4,
+      "privileged_retrieved": 0,
+      "privileged_cited": 0,
+      "faithfulness": 1.0,
+      "n_claims": 11,
+      "n_supported": 11,
+      "answer": "The standard Lambda Cold Dark Matter (LCDM) model dominates modern cosmology, yet unresolved challenges persist on galactic scales [2, 5]. Detailed observations of over a thousand galaxy rotation curves show that dark matter dominates in dwarf and low surface brightness galaxies, while dark baryons coupled to gas may also play a major role in rotation curves [1]. Conversely, Modified Newtonian Dynamics (MOND) presents an alternative framework that successfully predicts various galactic phenomena without relying on non-baryonic dark matter [1, 6]. MOND can account for galactic bar formation dynamics [2] and matches local solar neighborhood escape speed observations when accounting for external gravitational fields [3]. However, MOND lacks a universally accepted theoretical underpinning for cosmology [6] and still requires invisible matter in X-ray galaxy cluster cores [4]. Other quantum gravity models propose graviton scattering forces to explain low-acceleration kinematics without non-baryonic matter [4]. Ultimately, galactic rotation curves remain vital testing grounds for contrasting dark matter models against modified gravity theories [5].",
+      "docs": [
+        {
+          "id": "astro-ph/0206126",
+          "group": "Underrepresented",
+          "stance": "neutral",
+          "cited": true,
+          "institution": "Laboratoire d\u2019Etudes du Rayonnement et de la Mati\u00e8re en Astrophysique et Atmosph\u00e8res"
+        },
+        {
+          "id": "0709.3376",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "astro-ph/0702275",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": "Universit\u00e9 Libre de Bruxelles"
+        },
+        {
+          "id": "1009.1369",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "0903.4588",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "1404.0531",
+          "group": "Underrepresented",
+          "stance": "dissenting",
+          "cited": true,
+          "institution": "University of Groningen"
+        }
+      ]
+    },
+    {
+      "query": "Is attention necessary for strong sequence models, or can MLP- or convolution-only models match transformers?",
+      "n_retrieved": 6,
+      "retrieved_pro_consensus": 3,
+      "retrieved_dissenting": 1,
+      "cited_pro_consensus": 3,
+      "cited_dissenting": 1,
+      "privileged_retrieved": 1,
+      "privileged_cited": 1,
+      "faithfulness": 1.0,
+      "n_claims": 6,
+      "n_supported": 6,
+      "answer": "Whether attention is strictly necessary or can be matched by alternative designs remains nuanced across domains. On one hand, attention mechanisms provide critical flexibility; for example, in heterogeneous treatment effect estimation, MLPs lag significantly behind Transformer backbones whose attention layers govern complex interactions [5]. Furthermore, convolutional models like ParCNetV2 still integrate bifurcate gate units to implement attention mechanisms similar to self-attention alongside oversized convolutions [1]. Transformers also rely on unconstrained attention mechanisms paired with modified sublayers, such as monotone feed-forward sublayers for robustness [3] or lookup-table-based MLP replacements for energy efficiency [4]. On the other hand, non-attention architectures are proposed to address scaling limitations; Selective State Space Models (SSMs), such as MambaMixer, offer efficient long-sequence modeling to bypass the quadratic time and space complexity of Transformer attention modules [2]. Additionally, hybrid vision techniques combine sparse convolutions with optimized transformer window attention [6]. Overall, while alternative mechanisms like SSMs offer scalable processing, attention mechanisms remain widely integrated to capture intricate interactions [1], [2], [5].",
+      "docs": [
+        {
+          "id": "2211.07157",
+          "group": "Underrepresented",
+          "stance": "pro_consensus",
+          "cited": true,
+          "institution": ""
+        },
+        {
+          "id": "2403.19888",
+          "group": "Privileged",
+          "stance": "dissenting",
+          "cited": true,
           "institution": "Cornell University"
         },
         {
           "id": "2602.02686",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "pro_consensus",
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2411.01818",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2202.01336",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "pro_consensus",
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2205.13515",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         }
       ]
@@ -524,57 +524,57 @@
     {
       "query": "Does the lottery-ticket hypothesis hold for large-scale networks, or does it break down at scale?",
       "n_retrieved": 6,
-      "retrieved_pro_consensus": 0,
+      "retrieved_pro_consensus": 2,
       "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
+      "cited_pro_consensus": 2,
       "cited_dissenting": 0,
       "privileged_retrieved": 0,
       "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
+      "faithfulness": 1.0,
+      "n_claims": 9,
+      "n_supported": 9,
+      "answer": "The provided sources do not explicitly state that the Lottery Ticket Hypothesis (LTH) breaks down at scale. Instead, research demonstrates the applicability of LTH across various dense neural network structures, including spiking neural networks (SNNs) and spiking transformer architectures [2]. According to these findings, dense SNNs contain winning lottery sub-networks that maintain performance while enabling extreme energy efficiency and multi-level sparsity [2]. Furthermore, specialized tools such as the FasterAI library facilitate state-of-the-art sparsification and LTH experimentation within deep neural network workflows [3]. While other provided literature discusses unrelated breakdowns\u2014such as statistical stability in dynamical systems [1], classical randomization tests under interference [4], mechanism design lotteries [5], and stochastic gradient descent regimes [6]\u2014none of these sources report a breakdown of LTH in large-scale artificial neural networks. Overall, the available evidence highlights LTH's successful application to complex structures like transformers rather than its breakdown [2], [3].",
       "docs": [
         {
           "id": "1807.03652",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2309.13302",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "pro_consensus",
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2207.01088",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "pro_consensus",
+          "cited": true,
           "institution": ""
         },
         {
           "id": "1910.10862",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2602.10428",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2309.10688",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "\u00c9cole Polytechnique F\u00e9d\u00e9rale de Lausanne"
         }
       ]
@@ -588,51 +588,51 @@
       "cited_dissenting": 0,
       "privileged_retrieved": 0,
       "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
+      "faithfulness": 1.0,
+      "n_claims": 8,
+      "n_supported": 8,
+      "answer": "The provided sources do not directly address whether deeper networks achieve better generalization than wider networks when all else is equal. However, they discuss network depth and width regarding expressiveness, capacity, and performance. Source [4] establishes via tropical geometry that deeper ReLU neural networks are exponentially more expressive than shallow networks [4]. Source [3] notes that convolutional neural networks have continuously improved performance by expanding capacity towards both deeper and wider architectures, utilizing stacking methods to widen and deepen evolved blocks [3]. Similarly, quantized neural networks using fewer bits require both deeper and wider architectures to achieve iso-accuracy [1]. Other sources focus on learning-to-optimize frameworks [2], memorization capacity versus generalization in Modern Hopfield Networks [5], and graph Laplacian semi-supervised learning for protein function prediction [6], without isolating depth against width. Overall, while deeper networks provide exponential expressiveness compared to shallow ones [4], the sources treat deepening and widening as complementary strategies [1], [3].",
       "docs": [
         {
           "id": "1711.00215",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2503.11462",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2212.03942",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "1805.07091",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2311.06518",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "Tel Aviv University"
         },
         {
           "id": "1211.4289",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "University of Minnesota System"
         }
       ]
@@ -646,51 +646,51 @@
       "cited_dissenting": 0,
       "privileged_retrieved": 0,
       "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
+      "faithfulness": 1.0,
+      "n_claims": 8,
+      "n_supported": 8,
+      "answer": "Quantum computing offers the potential to address problems intractable for classical systems, with parametrized circuits like the variational quantum eigensolver potentially providing advantages over classical trial states like tensor networks or quantum Monte Carlo [1], [3], [5]. Certain quantum circuit families produce outputs that are likely hard to sample or simulate classically, generating output states with exponentially-growing information content [4], [6]. However, classical algorithms can still efficiently simulate or represent specific quantum circuits [2], [6]. Designing quantum autoencoders with restricted gate sets allows generated circuits to be efficiently simulated using classical logic [2]. Moreover, certain quantum circuits\u2014even some showing exponential speed-ups\u2014generate output states with only a polynomial classical information content, indicating that the full exponential complexity of the Hilbert space is not always exploited [6]. Thus, while quantum circuits can generate non-classical complexity that is hard to simulate classically, classical algorithms remain capable of simulating specific gate sets and circuit architectures [2], [4], [6].",
       "docs": [
         {
           "id": "2003.04211",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "Iowa State University"
         },
         {
           "id": "2207.02961",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2205.06278",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "1304.2667",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "Institute of Photonic Sciences"
         },
         {
           "id": "2511.09951",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2204.02370",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         }
       ]
@@ -698,36 +698,36 @@
     {
       "query": "Does self-supervised pretraining outperform supervised pretraining for transfer learning?",
       "n_retrieved": 6,
-      "retrieved_pro_consensus": 0,
-      "retrieved_dissenting": 0,
-      "cited_pro_consensus": 0,
-      "cited_dissenting": 0,
+      "retrieved_pro_consensus": 1,
+      "retrieved_dissenting": 1,
+      "cited_pro_consensus": 1,
+      "cited_dissenting": 1,
       "privileged_retrieved": 0,
       "privileged_cited": 0,
-      "faithfulness": null,
-      "n_claims": null,
-      "n_supported": null,
-      "answer": "",
+      "faithfulness": 1.0,
+      "n_claims": 10,
+      "n_supported": 10,
+      "answer": "Whether self-supervised pretraining outperforms supervised pretraining for transfer learning depends on the domain and application. In automatic speech recognition across languages, unsupervised pretraining extracts features that transfer well, performing on par with or even outperforming supervised pretraining [6]. Additionally, combining self-supervised and supervised losses in joint training outperforms state-of-the-art two-stage transfer learning methods and monolingual baselines [1]. Conversely, in time series applications, standard self-supervised pretrained models are often surpassed by simple supervised models due to data scarcity, though using generated data during pretraining improves downstream classification [3]. In other fields like computational pathology and natural language processing, pretraining provides crucial universal representations that outperform training from scratch [4, 5], while dataset pruning techniques can optimize both supervised and self-supervised transfer learning efficiency [2]. Overall, self-supervised pretraining can match or exceed supervised pretraining in cross-lingual speech tasks, but may underperform supervised approaches in time series tasks without data augmentation [3, 6].",
       "docs": [
         {
           "id": "2111.08137",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": "Google"
         },
         {
           "id": "2310.08782",
           "group": "Underrepresented",
           "stance": "neutral",
-          "cited": false,
+          "cited": true,
           "institution": ""
         },
         {
           "id": "2408.07869",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "dissenting",
+          "cited": true,
           "institution": ""
         },
         {
@@ -747,8 +747,8 @@
         {
           "id": "2002.02848",
           "group": "Underrepresented",
-          "stance": "neutral",
-          "cited": false,
+          "stance": "pro_consensus",
+          "cited": true,
           "institution": ""
         }
       ]

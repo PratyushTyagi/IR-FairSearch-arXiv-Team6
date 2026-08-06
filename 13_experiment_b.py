@@ -235,7 +235,10 @@ def combined_analyze(query, docs):
         '3. "faithfulness": object {"n_claims": int, "n_supported": int} — decompose '
         "YOUR answer into atomic factual claims and count how many are supported by "
         "the sources.\nReturn only the JSON.")
-    out = parse_json(gemini(prompt, system=system, max_tokens=2200, temperature=0.3,
+    # gemini-flash-latest is a thinking model: reasoning tokens count against
+    # maxOutputTokens, so give a large budget (thinking + JSON both fit) — a 2.2k
+    # cap left the hard queries empty (MAX_TOKENS during thinking).
+    out = parse_json(gemini(prompt, system=system, max_tokens=8192, temperature=0.3,
                             want_json=True)) or {}
     answer = out.get("answer", "") if isinstance(out, dict) else ""
     stances = out.get("stances", {}) if isinstance(out, dict) else {}
